@@ -1,8 +1,10 @@
-package src;
+package src.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
+
+import src.User;
 
 public class UserDAOImpl implements IUserDAO {
     private Connection conn;

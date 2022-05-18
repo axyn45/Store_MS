@@ -1,6 +1,6 @@
 package src;
 
-public class salesrecord {
+public class Record {
     private String transaction_id;
     private String barcode;
     private String productName;
@@ -9,11 +9,11 @@ public class salesrecord {
     private String operator;
     private String time;
 
-    public salesrecord() {
+    public Record() {
         super();
     }
 
-    public salesrecord(String transaction_id, String barcode, String productName, double price, int quantity, String operator, String time) {
+    public Record(String transaction_id, String barcode, String productName, double price, int quantity, String operator, String time) {
         super();
         this.transaction_id = transaction_id;
         this.barcode = barcode;
@@ -41,7 +41,7 @@ public class salesrecord {
     }
 
     public String getProductName() {
-        return productName;
+        return this.productName;
     }
 
     public void setProductName(String productName) {
@@ -49,7 +49,7 @@ public class salesrecord {
     }
 
     public double getPrice() {
-        return price;
+        return this.price;
     }
 
     public void setPrice(double price) {
