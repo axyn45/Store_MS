@@ -1,6 +1,7 @@
 package src.Services;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import src.DatabaseConnection;
 import src.User;
@@ -15,6 +16,7 @@ import src.Factory.DAOFactory;
 public class UserService {
     private DatabaseConnection dbc; // 数据库连接类
     private IUserDAO userDAO; // 由工厂统一提供的 dao 实现类对象
+    private User user;
 
     public UserService() {
         this.dbc = new DatabaseConnection(); // 连接数据库
@@ -52,5 +54,46 @@ public class UserService {
             this.dbc.close();
         }
         return mapResult;
+    }
+
+    public User login() {
+        int tries = 3;
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println("Login");
+        while (tries > 0) {
+
+            //Input username
+            System.out.println("Username: ");
+            String username = sc.nextLine();
+            try {
+                user = userDAO.getById(username);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (user == null) {
+                System.out.println("User does not exist!");
+                // tries--;
+                continue;
+            }
+
+            //Input password
+            System.out.println("Password: ");
+            String password = sc.nextLine();
+            if (user.getPassword().equals(password)) {
+                System.out.println("Login successful!");
+                sc.close();
+                return user;
+            } else {
+                System.out.println("Wrong password!");
+                user=null;
+                tries--;
+                continue;
+            }
+        }
+
+        System.out.println("You have no more chances left.");
+        sc.close();
+        return null;
     }
 }
