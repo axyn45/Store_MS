@@ -12,8 +12,8 @@
             "server": "localhost",
             "port": 33060,
             "driver": "MySQL",
-            "name": "mysql",
-            "database": "mysql",
+            "name": "sale",
+            "database": "sale",
             "username": "root",
             "password": "alex4455",
             "connectionTimeout": 1000
