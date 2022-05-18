@@ -1,3 +1,4 @@
+package src;
 import java.util.Scanner;
 
 public class Driver {
@@ -99,5 +100,25 @@ public class Driver {
         System.out.println("6. Exit");
         System.out.println("\nCashier: " + user.getChrName());
 
+    }
+
+    public static void cashing() {
+        //TODO: clear screen
+        System.out.println("===Cashing===");
+        System.out.println("Type in the merchandise barcode: ");
+        Scanner sc = new Scanner(System.in);
+        String barcode=sc.nextLine();
+
+        while(barcode.length()!=6){
+            System.out.println("Invalid barcode!A valid barcode contains exactly 6 digits. Please try again.");
+            //TODO: delay 1500ms
+            //TODO: clear screen
+            System.out.println("Type in the merchandise barcode: ");
+            barcode=sc.nextLine();
+        }
+
+        System.out.println("Type in the quantity: ");
+        int quantity=sc.nextInt();
+        
     }
 }

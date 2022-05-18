@@ -1,3 +1,4 @@
+package src;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -25,7 +26,7 @@ public class DatabaseConnection {
      */
     static {
         try {
-            Properties property = new Properties();
+            Properties properties = new Properties();
             // 使用绝对路径加载资源文件
             /*
              * String classPath =
@@ -35,12 +36,12 @@ public class DatabaseConnection {
             // 使用类加载器加载资源
             InputStream is = DatabaseConnection.class.getClassLoader()
                     .getResourceAsStream("resource/" + JDBCPROPERTY);
-            property.load(new InputStreamReader(is, "utf-8"));
+            properties.load(new InputStreamReader(is, "utf-8"));
             is.close();
-            DBDRIVER = property.getProperty("DBDRIVER");
-            DBURL = property.getProperty("DBURL");
-            DBUSER = property.getProperty("DBUSER");
-            PASSWORD = property.getProperty("PASSWORD");
+            DBDRIVER = properties.getProperty("DBDRIVER");
+            DBURL = properties.getProperty("DBURL");
+            DBUSER = properties.getProperty("DBUSER");
+            PASSWORD = properties.getProperty("PASSWORD");
             // 加载驱动，只需注册一次就行
             Class.forName(DBDRIVER);
         } catch (Exception e) {

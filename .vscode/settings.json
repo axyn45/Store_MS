@@ -14,8 +14,8 @@
             "driver": "MySQL",
             "name": "sale",
             "database": "sale",
-            "username": "root",
-            "password": "alex4455",
+            "username": "Admin_1234",
+            "password": "1234",
             "connectionTimeout": 1000
         }
     ],

@@ -1,3 +1,4 @@
+package src;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,7 +59,7 @@ public class UserDAOImpl implements IUserDAO {
 
     @Override
     public User getById(String userName) {
-        String sql = "SELECT userName,chrName,password,role FROM user WHEREuserName=?";
+        String sql = "SELECT userName,chrName,password,role FROM user WHERE userName=?";
         try {
             this.pstmt = this.conn.prepareStatement(sql);
             this.pstmt.setString(1, userName);
