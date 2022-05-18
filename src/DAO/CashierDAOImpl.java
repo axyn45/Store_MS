@@ -7,14 +7,14 @@ import java.util.List;
 
 import src.Record;
 
-public class SalesDAOImpl {
+public class CashierDAOImpl implements ICashierDAO{
     private Connection conn;
     private PreparedStatement pstmt;
 
     // public
 
     // 实例化时，给该类提供连接对象
-    public SalesDAOImpl(Connection conn) {
+    public CashierDAOImpl(Connection conn) {
         this.conn = conn;
     }
 
@@ -38,23 +38,23 @@ public class SalesDAOImpl {
     }
 
     // @Override
-    public boolean update(Record record) throws Exception {
-        String sql = "UPDATE user SET chrName=? ,password=?,role=? WHERE userName=?";
-        this.pstmt = this.conn.prepareStatement(sql);
-        this.pstmt.setString(1, record.getTransaction_id());
-        this.pstmt.setString(2, record.getBarcode());
-        this.pstmt.setString(3, record.getProductName());
-        this.pstmt.setDouble(4, record.getPrice());
-        this.pstmt.setInt(5, record.getQuantity());
-        this.pstmt.setString(6, record.getOperator());
-        // this.pstmt.setString(7, record.getTime());
-        this.pstmt.setString(7, "now()");
-        if (this.pstmt.executeUpdate() > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+    // public boolean update(Record record) throws Exception {
+    //     String sql = "UPDATE user SET chrName=? ,password=?,role=? WHERE userName=?";
+    //     this.pstmt = this.conn.prepareStatement(sql);
+    //     this.pstmt.setString(1, record.getTransaction_id());
+    //     this.pstmt.setString(2, record.getBarcode());
+    //     this.pstmt.setString(3, record.getProductName());
+    //     this.pstmt.setDouble(4, record.getPrice());
+    //     this.pstmt.setInt(5, record.getQuantity());
+    //     this.pstmt.setString(6, record.getOperator());
+    //     // this.pstmt.setString(7, record.getTime());
+    //     this.pstmt.setString(7, "now()");
+    //     if (this.pstmt.executeUpdate() > 0) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 
     // @Override
     public boolean delete(String transaction_id) throws Exception {

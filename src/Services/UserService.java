@@ -1,6 +1,6 @@
 package src.Services;
-import java.util.HashMap;
-import java.util.Map;
+// import java.util.HashMap;
+// import java.util.Map;
 import java.util.Scanner;
 
 import src.DatabaseConnection;
@@ -31,6 +31,8 @@ public class UserService {
      *           0，表示成功登录，code=1，表示登录失败，code=2，表示存在异常；msg 中存放错误描述，
      * @throws Exception
      */
+
+    /*
     public Map<String, Object> checkLogin(User user) throws Exception {
         Map<String, Object> mapResult = new HashMap<String, Object>();
         try {
@@ -55,6 +57,7 @@ public class UserService {
         }
         return mapResult;
     }
+    */
 
     public User login() {
         int tries = 3;
@@ -91,7 +94,6 @@ public class UserService {
                 continue;
             }
         }
-
         System.out.println("You have no more chances left.");
         sc.close();
         return null;
