@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
+import com.mysql.cj.xdevapi.Schema.Validation;
 
 import src.DAO.ICashierDAO;
 import src.DAO.IProductDAO;
 import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.DataValidation;
 import src.Utilities.DatabaseConnection;
 // import src.Utilities.EnterKeyListener;
 import src.Utilities.UIUX;
@@ -23,6 +25,7 @@ public class Cashier {
     private src.DataType.User user;
     // private EnterKeyListener enterListener=new EnterKeyListener();
     private UIUX util = new UIUX();
+    private DataValidation validate=new DataValidation();
 
     // 从工厂类获取 dao 实现类对象
     public Cashier(User user) {
@@ -38,7 +41,7 @@ public class Cashier {
         for (int i = 0; i == 0;) {
             System.out.println("Please input the barcode: ");
             barcode = sc.nextLine();
-            while (!isValidBarcode(barcode)) {
+            while (!validate.isValidBarcode(barcode)) {
                 System.out.println("Invalid barcode!");
                 System.out.println("A valid barcode contains exactly 6 digits!");
                 System.out.println("Retry in 2 seconds...");
@@ -85,7 +88,7 @@ public class Cashier {
         String date = sc.nextLine();
 
         util.cls();
-        String arrOfDate[] = isValidDate(date);
+        String arrOfDate[] = validate.isValidDate(date);
         while (arrOfDate == null) {
             System.out.println("Invalid date!");
             System.out.println("A valid date is in the format of yyyy-mm-dd!");
@@ -156,21 +159,5 @@ public class Cashier {
     //Returns xx.xx in string format
     
 
-    public boolean isValidBarcode(String barcode) {
-        if(barcode.length()!=6)
-            return false;
-        return true;
-    }
-
-    public String[] isValidDate(String date) {
-        // check if date is valid
-        String[] arrOfDate = date.split("-");
-        if(arrOfDate.length!=3){
-            return null;
-        }
-        if(arrOfDate[0].length()!=4||arrOfDate[1].length()!=2||arrOfDate[2].length()!=2){
-            return null;
-        }
-        return arrOfDate;
-    }
+    
 }

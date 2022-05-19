@@ -8,6 +8,7 @@ import java.util.Scanner;
 import src.DAO.IUserDAO;
 import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.DataValidation;
 import src.Utilities.DatabaseConnection;
 
 /**
@@ -19,6 +20,7 @@ public class UserService {
     private DatabaseConnection dbc; // 数据库连接类
     private IUserDAO userDAO; // 由工厂统一提供的 dao 实现类对象
     private User user;
+    private DataValidation validate=new DataValidation();
 
     public UserService() {
         this.dbc = new DatabaseConnection(); // 连接数据库
@@ -105,7 +107,7 @@ public class UserService {
         System.out.println("Please input your new password: ");
         String newPassword = sc.nextLine();
 
-        while (isValidPassword(newPassword)) {
+        while (validate.isValidPassword(newPassword)) {
             System.out.println("Please input your new password: ");
             newPassword = sc.nextLine();
         }
@@ -125,55 +127,5 @@ public class UserService {
         sc.close();
     }
 
-    public boolean isValidPassword(String password) {
-        boolean notNull=false;
-        boolean lenChk=false;
-        boolean containsLC=false;
-        boolean containsUC=false;
-        boolean containsDigit=false;
-
-        if (password != null && password != "") {
-            notNull=true;
-        }
-        else{
-            System.out.println("Password cannot be empty!");
-        }
-
-        if(password.length()>=6) {
-            lenChk=true;
-        }
-        else{
-            System.out.println("Password must be at least 6 characters long!");
-        }
-
-        if(password.matches(".*[a-z].*")) {
-            containsLC=true;
-        }
-        else{
-            System.out.println("Password must contain at least one lowercase letter!");
-        }
-
-        if(password.matches(".*[A-Z].*")) {
-            containsUC=true;
-        }
-        else{
-            System.out.println("Password must contain at least one uppercase letter!");
-        }
-
-        if(password.matches(".*\\d.*")) {
-            containsDigit=true;
-        }
-        else{
-            System.out.println("Password must contain at least one digit!");
-        }
-
-
-
-        if(notNull && lenChk && containsLC && containsUC && containsDigit) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
+    
 }

@@ -7,6 +7,7 @@ import src.DAO.IProductDAO;
 import src.DataType.Product;
 import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.DataValidation;
 import src.Utilities.DatabaseConnection;
 import src.Utilities.UIUX;
 
@@ -16,6 +17,7 @@ public class ProductMaintainance {
     // private src.DataType.Product product;
     private IProductDAO productDAO;
     private UIUX util = new UIUX();
+    private DataValidation validate = new DataValidation();
 
     public ProductMaintainance(User user) {
         this.dbc = new DatabaseConnection(); // 连接数据库
@@ -58,12 +60,14 @@ public class ProductMaintainance {
                 break;
             case 5:
                 // back
+                sc.close();
                 return;
             default:
                 System.out.println("Invalid choice!");
                 break;
             }
         }
+        // sc.close();
 
     }
 
@@ -73,6 +77,22 @@ public class ProductMaintainance {
 
     public void manualInput() {
         // TODO manual input
+        Product product=new Product();
+        Scanner sc = new Scanner(System.in);
+        while(true){
+            util.cls();
+            System.out.println("Product Adding Wizard");
+            System.out.println("Product Barcode: ");
+            String barcode=sc.nextLine();
+            if(!validate.isValidBarcode(barcode)){
+                System.out.println("Invalid barcode!");
+                System.out.println("A valid barcode contains exactly 6 digits!");
+                System.out.println("Retry in 2 seconds...");
+                util.delay(2000);
+                util.cls();
+                continue;
+            }
+        }
     }
 
     public void searchProduct() {
