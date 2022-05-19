@@ -1,13 +1,10 @@
 package src.Services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-import com.mysql.cj.util.Util;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 import src.DAO.ICashierDAO;
 import src.DAO.IProductDAO;
@@ -62,7 +59,7 @@ public class Cashier {
         record.setTransaction_id(Integer.toString(Integer.parseInt(cashierDAO.getLastTransactionID()) + 1));
         record.setBarcode(barcode);
         record.setProductName(product.getProductName());
-        record.setPrice(product.getPrice_x100() / 100.0);
+        record.setPrice_x100(product.getPrice_x100() / 100.0);
         record.setQuantity(sc.nextInt());
         record.setOperator(user.getUserName());
         record.setTime("now()");
@@ -118,11 +115,11 @@ public class Cashier {
         // TODO export to text
     }
 
-    public void CashierMenu() {
-        util.cls();
-        // TODO show menu
+    // public void CashierMenu() {
+    //     util.cls();
+    //     // TODO show menu
 
-    }
+    // }
 
     public void dataExportMenu() {
         util.cls();
@@ -132,17 +129,49 @@ public class Cashier {
 
     public void dateQueryList(String[] date, ListIterator<src.DataType.Record> it) {
         util.cls();
-        // TODO show menu
+        // show menu
+        System.out.println("Transaction records of " + date[0] + "-" + date[1] + "-" + date[2]);
+        System.out.println("Transaction ID\tBarcode\tProduct Name\tPrice\tQuantity\tOperator\tTime");
+        System.out.println("--------------\t-------\t------------\t-----\t--------\t--------\t----");
+        src.DataType.Record record;
+        int amount_x100 = 0;
+        List<String> products=new ArrayList<String>();
+        int total_quantity=0;
+        while (it.hasNext()) {
+            record = it.next();
+            if(!products.contains(record.getBarcode())){
+                products.add(record.getBarcode());
+                total_quantity+=record.getQuantity();
+                amount_x100 += record.getQuantity() * record.getPrice_x100();
+            }
+            System.out.println(record.getTransaction_id() + "\t" + record.getBarcode() + "\t" + record.getProductName()+"\t" + record.getPrice_x100() + "\t" + record.getQuantity() + "\t" + record.getOperator() + "\t" + record.getTime());
+        }
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("Total quantity: " + total_quantity+"\tTotal products: "+products.size()+"\tTotal amount: "+price2string(amount_x100));
+        System.out.println("\nPress ENTER to continue...");        
         enterListener.wait4enter();
     }
 
+    //Returns xx.xx in string format
+    public String price2string(int price_x100){
+        return price_x100/100+"."+(price_x100%100<10?"0":"")+price_x100%100;
+    }
+
     public boolean isValidBarcode(String barcode) {
-        // TODO check if barcode is valid
+        if(barcode.length()!=6)
+            return false;
         return true;
     }
 
     public String[] isValidDate(String date) {
-        // TODO check if date is valid
-        return null;
+        // check if date is valid
+        String[] arrOfDate = date.split("-");
+        if(arrOfDate.length!=3){
+            return null;
+        }
+        if(arrOfDate[0].length()!=4||arrOfDate[1].length()!=2||arrOfDate[2].length()!=2){
+            return null;
+        }
+        return arrOfDate;
     }
 }

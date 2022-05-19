@@ -4,7 +4,7 @@ public class Record {
     private String transaction_id;
     private String barcode;
     private String productName;
-    private double price;
+    private int price_x100;
     private int quantity;
     private String operator;
     private String time;
@@ -13,12 +13,12 @@ public class Record {
         super();
     }
 
-    public Record(String transaction_id, String barcode, String productName, double price, int quantity, String operator, String time) {
+    public Record(String transaction_id, String barcode, String productName, int price_x100, int quantity, String operator, String time) {
         super();
         this.transaction_id = transaction_id;
         this.barcode = barcode;
         this.productName = productName;
-        this.price = price;
+        this.price_x100 = price_x100;
         this.quantity = quantity;
         this.operator = operator;
         this.time = time;
@@ -48,12 +48,12 @@ public class Record {
         this.productName = productName;
     }
 
-    public double getPrice() {
-        return this.price;
+    public int getPrice_x100() {
+        return this.price_x100;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPrice_x100(int price_x100) {
+        this.price_x100 = price_x100;
     }
 
     public int getQuantity() {
