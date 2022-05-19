@@ -4,7 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import src.User;
+import src.DataType.User;
 
 public class UserDAOImpl implements IUserDAO {
     private Connection conn;

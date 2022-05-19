@@ -1,6 +1,7 @@
 package src.DAO;
 import java.util.List;
-import src.Record;
+
+import src.DataType.Record;
 
 public interface ICashierDAO {
     // 增加一条记录
@@ -18,5 +19,5 @@ public interface ICashierDAO {
 
     public String getLastTransactionID();
 
-    public List<src.Record> query(String query) throws Exception;
+    public List<src.DataType.Record> query(String query) throws Exception;
 }

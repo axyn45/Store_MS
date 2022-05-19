@@ -2,7 +2,7 @@ package src.DAO;
 
 import java.util.List;
 
-import src.Product;
+import src.DataType.Product;
 
 public interface IProductDAO {
     // 增加一条记录

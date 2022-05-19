@@ -1,4 +1,4 @@
-package src;
+package src.DataType;
 
 public class Record {
     private String transaction_id;

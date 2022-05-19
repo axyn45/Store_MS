@@ -1,13 +1,13 @@
 package src.Services;
 
-import src.DatabaseConnection;
-import src.User;
 import src.DAO.IProductDAO;
+import src.DataType.User;
+import src.Utilities.DatabaseConnection;
 
 public class ProductMaintainance {
     private DatabaseConnection dbc; // 数据库连接类
-    private src.User user;
-    private src.Product product;
+    private src.DataType.User user;
+    private src.DataType.Product product;
     private IProductDAO productDAO;
 
     public ProductMaintainance(User user) {

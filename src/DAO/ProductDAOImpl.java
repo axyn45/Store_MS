@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import src.Product;
+import src.DataType.Product;
 
 public class ProductDAOImpl implements IProductDAO {
     private Connection conn;

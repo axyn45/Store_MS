@@ -5,10 +5,10 @@ import java.security.MessageDigest;
 // import java.util.Map;
 import java.util.Scanner;
 
-import src.DatabaseConnection;
-import src.User;
 import src.DAO.IUserDAO;
+import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.DatabaseConnection;
 
 /**
  * 数据层完成后最终一定要交给业务层进行调用，在业务层里面就需要通过工厂取得数据层接口对象， 业务层的接口名称为 XxxxService，保存在

@@ -4,22 +4,28 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-import com.mysql.cj.xdevapi.AddResult;
+import com.mysql.cj.util.Util;
 
-import src.DatabaseConnection;
-import src.Product;
-import src.User;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import src.DAO.ICashierDAO;
 import src.DAO.IProductDAO;
+import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.DatabaseConnection;
+import src.Utilities.EnterKeyListener;
+import src.Utilities.UIUX;
 
 public class Cashier {
     private DatabaseConnection dbc; // 数据库连接类
     private ICashierDAO cashierDAO; // 由工厂统一提供的 dao 实现类对象
     private IProductDAO productDAO;
-    private src.Product product;
-    private src.Record record;
-    private src.User user;
+    private src.DataType.Product product;
+    private src.DataType.Record record;
+    private src.DataType.User user;
+    private EnterKeyListener enterListener=new EnterKeyListener();
+    private UIUX util = new UIUX();
 
     // 从工厂类获取 dao 实现类对象
     public Cashier(User user) {
@@ -38,8 +44,8 @@ public class Cashier {
                 System.out.println("Invalid barcode!");
                 System.out.println("A valid barcode contains exactly 6 digits!");
                 System.out.println("Retry in 2 seconds...");
-                // TODO delay 2000ms
-                // TODO clear screen
+                util.delay(2000);
+                util.cls();
                 System.out.println("Please input the barcode: ");
                 barcode = sc.nextLine();
             }
@@ -49,7 +55,7 @@ public class Cashier {
                 i = 1;
             } catch (Exception e) {
                 System.out.println("Product not found! Please try again.");
-                // TODO delay 2000ms
+                util.delay(2000);
             }
         }
 
@@ -64,12 +70,12 @@ public class Cashier {
         try {
             cashierDAO.insert(record);
             System.out.println("Transaction added successfully!");
-            // TODO clear screen
+            util.cls();
             sc.close();
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding transaction!");
-            // TODO clear screen
+            util.cls();
             sc.close();
             return false;
         }
@@ -80,27 +86,28 @@ public class Cashier {
         Scanner sc = new Scanner(System.in);
         String date = sc.nextLine();
 
-        // TODO clear screen
+        util.cls();
         String arrOfDate[] = isValidDate(date);
         while (arrOfDate == null) {
             System.out.println("Invalid date!");
             System.out.println("A valid date is in the format of yyyy-mm-dd!");
             System.out.println("Retry in 2 seconds...");
-            // TODO delay 2000ms
-            // TODO clear screen
+            util.delay(2000);
+            util.cls();
             System.out.println("Please input the date: ");
             date = sc.nextLine();
         }
-        List<src.Record> records = null;
+        List<src.DataType.Record> records = null;
         try {
             records = cashierDAO.query("select * from record where time like '%" + date + "%'");
         } catch (Exception e) {
             System.out.println("Error in querying transactions!");
-            // TODO clear screen
+            util.cls();
         }
 
-        ListIterator<src.Record> it = records.listIterator();
-        dateQueryMenu(arrOfDate, it);
+        ListIterator<src.DataType.Record> it = records.listIterator();
+        dateQueryList(arrOfDate, it);
+        sc.close();
     }
 
     public void export2sheet() {
@@ -112,19 +119,21 @@ public class Cashier {
     }
 
     public void CashierMenu() {
-        // TODO clear screen
+        util.cls();
         // TODO show menu
 
     }
 
     public void dataExportMenu() {
-        // TODO clear screen
+        util.cls();
         // TODO show menu
+        
     }
 
-    public void dateQueryMenu(String[] date, ListIterator<src.Record> it) {
-        // TODO clear screen
+    public void dateQueryList(String[] date, ListIterator<src.DataType.Record> it) {
+        util.cls();
         // TODO show menu
+        enterListener.wait4enter();
     }
 
     public boolean isValidBarcode(String barcode) {

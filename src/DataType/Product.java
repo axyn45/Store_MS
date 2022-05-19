@@ -1,4 +1,4 @@
-package src;
+package src.DataType;
 
 public class Product {
     private String barcode;

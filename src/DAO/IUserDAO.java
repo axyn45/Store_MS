@@ -1,7 +1,7 @@
 package src.DAO;
 import java.util.List;
 
-import src.User;
+import src.DataType.User;
 
 public interface IUserDAO {
     // 增加一条记录

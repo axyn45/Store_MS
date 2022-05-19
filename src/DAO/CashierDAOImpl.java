@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.List;
 
-import src.Record;
+import src.DataType.Record;
 
 public class CashierDAOImpl implements ICashierDAO{
     private Connection conn;
@@ -112,7 +112,7 @@ public class CashierDAOImpl implements ICashierDAO{
     }
 
     // @Override
-    public List<src.Record> query(String query) throws Exception {
+    public List<src.DataType.Record> query(String query) throws Exception {
         // 可以后续再实现，但是该方法不能删除，因为实现接口，必须实现接口的所有方法，即使该方法暂时没代码
         
         return null;

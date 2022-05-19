@@ -1,4 +1,4 @@
-package src;
+package src.DataType;
 public class User {
     private String userName;
     private String chrName;
