@@ -1,4 +1,6 @@
 package src.Services;
+
+import java.security.MessageDigest;
 // import java.util.HashMap;
 // import java.util.Map;
 import java.util.Scanner;
@@ -33,31 +35,16 @@ public class UserService {
      */
 
     /*
-    public Map<String, Object> checkLogin(User user) throws Exception {
-        Map<String, Object> mapResult = new HashMap<String, Object>();
-        try {
-            User foundUser = this.userDAO.getById(user.getUserName());
-            if (foundUser == null) {
-                mapResult.put("code", 1);
-                mapResult.put("msg", "用户名不存在！");
-            } else {
-                if (!foundUser.getPassword().equals(user.getPassword())) {
-                    mapResult.put("code", 1);
-                    mapResult.put("msg", "密码不正确！");
-                } else {
-                    mapResult.put("code", 0);
-                    mapResult.put("msg", "登录成功！");
-                }
-            }
-        } catch (Exception e) {
-            mapResult.put("code", 2);
-            mapResult.put("msg", e.getMessage());
-        } finally { // 无论是否有异常，都需要关闭数据库连接
-            this.dbc.close();
-        }
-        return mapResult;
-    }
-    */
+     * public Map<String, Object> checkLogin(User user) throws Exception {
+     * Map<String, Object> mapResult = new HashMap<String, Object>(); try { User
+     * foundUser = this.userDAO.getById(user.getUserName()); if (foundUser == null)
+     * { mapResult.put("code", 1); mapResult.put("msg", "用户名不存在！"); } else { if
+     * (!foundUser.getPassword().equals(user.getPassword())) { mapResult.put("code",
+     * 1); mapResult.put("msg", "密码不正确！"); } else { mapResult.put("code", 0);
+     * mapResult.put("msg", "登录成功！"); } } } catch (Exception e) {
+     * mapResult.put("code", 2); mapResult.put("msg", e.getMessage()); } finally {
+     * // 无论是否有异常，都需要关闭数据库连接 this.dbc.close(); } return mapResult; }
+     */
 
     public User login() {
         int tries = 3;
@@ -66,7 +53,7 @@ public class UserService {
         System.out.println("Login");
         while (tries > 0) {
 
-            //Input username
+            // Input username
             System.out.println("Username: ");
             String username = sc.nextLine();
             try {
@@ -80,7 +67,7 @@ public class UserService {
                 continue;
             }
 
-            //Input password
+            // Input password
             System.out.println("Password: ");
             String password = sc.nextLine();
             if (user.getPassword().equals(password)) {
@@ -89,7 +76,7 @@ public class UserService {
                 return user;
             } else {
                 System.out.println("Wrong password!");
-                user=null;
+                user = null;
                 tries--;
                 continue;
             }
@@ -97,5 +84,96 @@ public class UserService {
         System.out.println("You have no more chances left.");
         sc.close();
         return null;
+    }
+
+    public void changePassword() {
+        System.out.println("Please input your old password for confirmation: ");
+        Scanner sc = new Scanner(System.in);
+        int tries = 3;
+        while (!sc.nextLine().equals(user.getPassword())) {
+            tries--;
+            if (tries != 0) {
+                System.out.println("Wrong password! " + tries + " chances left.");
+                System.out.println("Please input your old password for confirmation: ");
+            } else {
+                System.out.println("You have no more chances left.");
+                sc.close();
+                return;
+            }
+        }
+
+        System.out.println("Please input your new password: ");
+        String newPassword = sc.nextLine();
+
+        while (isValidPassword(newPassword)) {
+            System.out.println("Please input your new password: ");
+            newPassword = sc.nextLine();
+        }
+
+        System.out.println("Re-enter your new password to confirm your change: ");
+        if (sc.nextLine().equals(newPassword)) {
+            user.setPassword(newPassword);
+            try {
+                userDAO.update(user);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println("Password changed successfully!");
+        } else {
+            System.out.println("Password change cancelled!");
+        }
+        sc.close();
+    }
+
+    public boolean isValidPassword(String password) {
+        boolean notNull=false;
+        boolean lenChk=false;
+        boolean containsLC=false;
+        boolean containsUC=false;
+        boolean containsDigit=false;
+
+        if (password != null && password != "") {
+            notNull=true;
+        }
+        else{
+            System.out.println("Password cannot be empty!");
+        }
+
+        if(password.length()>=6) {
+            lenChk=true;
+        }
+        else{
+            System.out.println("Password must be at least 6 characters long!");
+        }
+
+        if(password.matches(".*[a-z].*")) {
+            containsLC=true;
+        }
+        else{
+            System.out.println("Password must contain at least one lowercase letter!");
+        }
+
+        if(password.matches(".*[A-Z].*")) {
+            containsUC=true;
+        }
+        else{
+            System.out.println("Password must contain at least one uppercase letter!");
+        }
+
+        if(password.matches(".*\\d.*")) {
+            containsDigit=true;
+        }
+        else{
+            System.out.println("Password must contain at least one digit!");
+        }
+
+
+
+        if(notNull && lenChk && containsLC && containsUC && containsDigit) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

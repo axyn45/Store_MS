@@ -30,7 +30,7 @@ public class Cashier {
 
     public boolean AddTransaction() {
         Scanner sc = new Scanner(System.in);
-        String barcode=null;
+        String barcode = null;
         for (int i = 0; i == 0;) {
             System.out.println("Please input the barcode: ");
             barcode = sc.nextLine();
@@ -75,14 +75,14 @@ public class Cashier {
         }
     }
 
-    public void queryByDate(){
+    public void searchByDate() {
         System.out.println("Please input the date: ");
         Scanner sc = new Scanner(System.in);
         String date = sc.nextLine();
-        
-        //TODO clear screen
-        String arrOfDate[]=isValidDate(date);
-        while(arrOfDate==null){
+
+        // TODO clear screen
+        String arrOfDate[] = isValidDate(date);
+        while (arrOfDate == null) {
             System.out.println("Invalid date!");
             System.out.println("A valid date is in the format of yyyy-mm-dd!");
             System.out.println("Retry in 2 seconds...");
@@ -91,18 +91,24 @@ public class Cashier {
             System.out.println("Please input the date: ");
             date = sc.nextLine();
         }
-        List<src.Record> records=null;
+        List<src.Record> records = null;
         try {
-            records = 
-            cashierDAO.query("select * from record where time like '%" + date + "%'");
+            records = cashierDAO.query("select * from record where time like '%" + date + "%'");
         } catch (Exception e) {
             System.out.println("Error in querying transactions!");
             // TODO clear screen
         }
 
-        
         ListIterator<src.Record> it = records.listIterator();
-        dateQueryMenu(arrOfDate,it);
+        dateQueryMenu(arrOfDate, it);
+    }
+
+    public void export2sheet() {
+        // TODO export to excel
+    }
+
+    public void export2text() {
+        // TODO export to text
     }
 
     public void CashierMenu() {
@@ -111,7 +117,12 @@ public class Cashier {
 
     }
 
-    public void dateQueryMenu(String[] date,ListIterator<src.Record> it) {
+    public void dataExportMenu() {
+        // TODO clear screen
+        // TODO show menu
+    }
+
+    public void dateQueryMenu(String[] date, ListIterator<src.Record> it) {
         // TODO clear screen
         // TODO show menu
     }
