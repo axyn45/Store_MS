@@ -29,7 +29,7 @@ public class CashierDAOImpl implements ICashierDAO{
         this.pstmt.setInt(5, record.getQuantity());
         this.pstmt.setString(6, record.getOperator());
         // this.pstmt.setString(7, record.getTime());
-        this.pstmt.setString(7, "now()");
+        this.pstmt.setString(7, record.getTime());
         if (this.pstmt.executeUpdate() > 0) {
             return true;
         } else {
@@ -95,9 +95,26 @@ public class CashierDAOImpl implements ICashierDAO{
 
     }
 
+    public String getLastTransactionID(){
+        String sql = "SELECT * FROM salesdetail ORDER BY transaction_id DESC LIMIT 1";
+        try {
+            this.pstmt = this.conn.prepareStatement(sql);
+            ResultSet rs = this.pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("transaction_id");
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     // @Override
-    public List<Record> query(Record record) throws Exception {
+    public List<src.Record> query(String query) throws Exception {
         // 可以后续再实现，但是该方法不能删除，因为实现接口，必须实现接口的所有方法，即使该方法暂时没代码
+        
         return null;
     }
 }
