@@ -18,5 +18,5 @@ public interface IProductDAO {
     public Product getByBarcode(String barcode) throws Exception;
     // 查询满足条件的记录：查询条件封装在 user 对象中，若 user 对象的某个成员变量值为 null，则表示查询时忽略该字段查询条件
 
-    public List<Product> query(Product product) throws Exception;
+    public List<Product> query(String qstring) throws Exception;
 }

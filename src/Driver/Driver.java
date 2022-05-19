@@ -48,23 +48,23 @@ public class Driver {
     // int option = sc.nextInt();
     // switch (option) {
     // case 1:
-    // // TODO: cashing();
+    // TODO: cashing();
     // break;
     // case 2:
-    // // TODO: query();
+    // TODO: query();
     // break;
     // case 3:
-    // // TODO: merchandise();
+    // TODO: merchandise();
     // break;
     // case 4:
-    // // TODO: changePassword();
+    // TODO: changePassword();
     // break;
     // case 5:
-    // // TODO: exportData();
+    // TODO: exportData();
     // break;
     // case 6:
     // System.out.println("\nQuitting...");
-    // // TODO: delay 1000ms
+    // TODO: delay 1000ms
     // sc.close();
     // return;
     // }

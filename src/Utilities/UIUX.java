@@ -14,5 +14,17 @@ public class UIUX {
             Thread.currentThread().interrupt();
         }
     }
+    public String price2string(int price_x100){
+        return price_x100/100+"."+(price_x100%100<10?"0":"")+price_x100%100;
+    }
+    public void wait4enter(){
+        System.out.println("Press Enter key to continue...");
+        try
+        {
+            System.in.read();
+        }  
+        catch(Exception e)
+        {}  
+     }
     
 }

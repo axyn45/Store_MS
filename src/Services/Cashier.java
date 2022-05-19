@@ -11,7 +11,7 @@ import src.DAO.IProductDAO;
 import src.DataType.User;
 import src.Factory.DAOFactory;
 import src.Utilities.DatabaseConnection;
-import src.Utilities.EnterKeyListener;
+// import src.Utilities.EnterKeyListener;
 import src.Utilities.UIUX;
 
 public class Cashier {
@@ -21,13 +21,14 @@ public class Cashier {
     private src.DataType.Product product;
     private src.DataType.Record record;
     private src.DataType.User user;
-    private EnterKeyListener enterListener=new EnterKeyListener();
+    // private EnterKeyListener enterListener=new EnterKeyListener();
     private UIUX util = new UIUX();
 
     // 从工厂类获取 dao 实现类对象
     public Cashier(User user) {
         this.dbc = new DatabaseConnection(); // 连接数据库
         this.cashierDAO = DAOFactory.getICashierDAOInstance(this.dbc.getConnection());
+        this.productDAO = DAOFactory.getIProductDAOInstance(this.dbc.getConnection());
         this.user = user;
     }
 
@@ -59,7 +60,7 @@ public class Cashier {
         record.setTransaction_id(Integer.toString(Integer.parseInt(cashierDAO.getLastTransactionID()) + 1));
         record.setBarcode(barcode);
         record.setProductName(product.getProductName());
-        record.setPrice_x100(product.getPrice_x100() / 100.0);
+        record.setPrice_x100(product.getPrice_x100());
         record.setQuantity(sc.nextInt());
         record.setOperator(user.getUserName());
         record.setTime("now()");
@@ -103,7 +104,7 @@ public class Cashier {
         }
 
         ListIterator<src.DataType.Record> it = records.listIterator();
-        dateQueryList(arrOfDate, it);
+        listDateQuery(arrOfDate, it);
         sc.close();
     }
 
@@ -127,7 +128,7 @@ public class Cashier {
         
     }
 
-    public void dateQueryList(String[] date, ListIterator<src.DataType.Record> it) {
+    public void listDateQuery(String[] date, ListIterator<src.DataType.Record> it) {
         util.cls();
         // show menu
         System.out.println("Transaction records of " + date[0] + "-" + date[1] + "-" + date[2]);
@@ -147,15 +148,13 @@ public class Cashier {
             System.out.println(record.getTransaction_id() + "\t" + record.getBarcode() + "\t" + record.getProductName()+"\t" + record.getPrice_x100() + "\t" + record.getQuantity() + "\t" + record.getOperator() + "\t" + record.getTime());
         }
         System.out.println("-------------------------------------------------------------");
-        System.out.println("Total quantity: " + total_quantity+"\tTotal products: "+products.size()+"\tTotal amount: "+price2string(amount_x100));
+        System.out.println("Total quantity: " + total_quantity+"\tTotal products: "+products.size()+"\tTotal amount: "+util.price2string(amount_x100));
         System.out.println("\nPress ENTER to continue...");        
-        enterListener.wait4enter();
+        util.wait4enter();
     }
 
     //Returns xx.xx in string format
-    public String price2string(int price_x100){
-        return price_x100/100+"."+(price_x100%100<10?"0":"")+price_x100%100;
-    }
+    
 
     public boolean isValidBarcode(String barcode) {
         if(barcode.length()!=6)
