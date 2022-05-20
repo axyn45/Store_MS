@@ -20,12 +20,12 @@ public class ProductDAOImpl implements IProductDAO {
     }
 
     public boolean insert(Product product) throws Exception {
-        String sql = "INSERT INTO product(barcode,productName,price,supplyer) " + "VALUES(?,?,?,?)";
+        String sql = "INSERT INTO product(barcode,productName,price,supplier) " + "VALUES(?,?,?,?)";
         this.pstmt = this.conn.prepareStatement(sql);
         this.pstmt.setString(1, product.getBarcode());
         this.pstmt.setString(2, product.getProductName());
         this.pstmt.setInt(3, product.getPrice_x100());
-        this.pstmt.setString(4, product.getSupplyer());
+        this.pstmt.setString(4, product.getSupplier());
         if (this.pstmt.executeUpdate() > 0) {
             return true;
         } else {
@@ -39,7 +39,7 @@ public class ProductDAOImpl implements IProductDAO {
         this.pstmt.setString(1, product.getBarcode());
         this.pstmt.setString(2, product.getProductName());
         this.pstmt.setInt(3, product.getPrice_x100());
-        this.pstmt.setString(4, product.getSupplyer());
+        this.pstmt.setString(4, product.getSupplier());
         if (this.pstmt.executeUpdate() > 0) {
             return true;
         } else {
@@ -68,7 +68,7 @@ public class ProductDAOImpl implements IProductDAO {
             product.setBarcode(rs.getString("barcode"));
             product.setProductName(rs.getString("name"));
             product.setPrice_x100(rs.getInt("price"));
-            product.setSupplyer(rs.getString("supplyer"));
+            product.setSupplier(rs.getString("supplier"));
             return product;
         } else {
             return null;
@@ -85,7 +85,7 @@ public class ProductDAOImpl implements IProductDAO {
             product.setBarcode(rs.getString("barcode"));
             product.setProductName(rs.getString("name"));
             product.setPrice_x100(rs.getInt("price"));
-            product.setSupplyer(rs.getString("supplyer"));
+            product.setSupplier(rs.getString("supplier"));
             products.add(product);
         }
         return products;

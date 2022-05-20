@@ -19,6 +19,21 @@ public class DataValidation {
         return arrOfDate;
     }
 
+    public int isValidPrice(String price) {
+        String[] arrOfPrice = price.split("\\.");
+        if(arrOfPrice.length>2){
+            return -1;
+        }
+        if(arrOfPrice[1].length()>2){
+            return -1;
+        }
+        for(int i=arrOfPrice[1].length();i<2;i++){
+            arrOfPrice[1]="0"+arrOfPrice[1];
+        }
+        String price_x100=arrOfPrice[0]+arrOfPrice[1];
+        return Integer.parseInt(price_x100);
+    }
+
     public boolean isValidPassword(String password) {
         boolean notNull=false;
         boolean lenChk=false;

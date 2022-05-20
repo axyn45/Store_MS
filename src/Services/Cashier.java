@@ -13,7 +13,6 @@ import src.DataType.User;
 import src.Factory.DAOFactory;
 import src.Utilities.DataValidation;
 import src.Utilities.DatabaseConnection;
-// import src.Utilities.EnterKeyListener;
 import src.Utilities.UIUX;
 
 public class Cashier {
@@ -23,9 +22,8 @@ public class Cashier {
     private src.DataType.Product product;
     private src.DataType.Record record;
     private src.DataType.User user;
-    // private EnterKeyListener enterListener=new EnterKeyListener();
     private UIUX util = new UIUX();
-    private DataValidation validate=new DataValidation();
+    private DataValidation validate = new DataValidation();
 
     // 从工厂类获取 dao 实现类对象
     public Cashier(User user) {
@@ -119,16 +117,35 @@ public class Cashier {
         // TODO export to text
     }
 
-    // public void CashierMenu() {
-    //     util.cls();
-    //     // TODO show menu
-
-    // }
-
     public void dataExportMenu() {
+        exportUI();
+        Scanner sc = new Scanner(System.in);
+        int option = sc.nextInt();
+        while (true) {
+            switch (option) {
+            case 1:
+                export2sheet();
+                break;
+            case 2:
+                export2text();
+                break;
+            case 3:
+                util.cls();
+                return;
+            }
+            exportUI();
+            option = sc.nextInt();
+        }
+    }
+
+    public void exportUI() {
         util.cls();
         // TODO show menu
-        
+        System.out.println("====Data Export Menu====\n");
+        System.out.println("1. Export to Excel");
+        System.out.println("2. Export to Text");
+        System.out.println("3. Back");
+        System.out.println("\nPlease input your choice: ");
     }
 
     public void listDateQuery(String[] date, ListIterator<src.DataType.Record> it) {
@@ -139,25 +156,26 @@ public class Cashier {
         System.out.println("--------------\t-------\t------------\t-----\t--------\t--------\t----");
         src.DataType.Record record;
         int amount_x100 = 0;
-        List<String> products=new ArrayList<String>();
-        int total_quantity=0;
+        List<String> products = new ArrayList<String>();
+        int total_quantity = 0;
         while (it.hasNext()) {
             record = it.next();
-            if(!products.contains(record.getBarcode())){
+            if (!products.contains(record.getBarcode())) {
                 products.add(record.getBarcode());
-                total_quantity+=record.getQuantity();
+                total_quantity += record.getQuantity();
                 amount_x100 += record.getQuantity() * record.getPrice_x100();
             }
-            System.out.println(record.getTransaction_id() + "\t" + record.getBarcode() + "\t" + record.getProductName()+"\t" + record.getPrice_x100() + "\t" + record.getQuantity() + "\t" + record.getOperator() + "\t" + record.getTime());
+            System.out.println(record.getTransaction_id() + "\t" + record.getBarcode() + "\t" + record.getProductName()
+                    + "\t" + record.getPrice_x100() + "\t" + record.getQuantity() + "\t" + record.getOperator() + "\t"
+                    + record.getTime());
         }
         System.out.println("-------------------------------------------------------------");
-        System.out.println("Total quantity: " + total_quantity+"\tTotal products: "+products.size()+"\tTotal amount: "+util.price2string(amount_x100));
-        System.out.println("\nPress ENTER to continue...");        
+        System.out.println("Total quantity: " + total_quantity + "\tTotal products: " + products.size()
+                + "\tTotal amount: " + util.price2string(amount_x100));
+        System.out.println("\nPress ENTER to continue...");
         util.wait4enter();
     }
 
-    //Returns xx.xx in string format
-    
+    // Returns xx.xx in string format
 
-    
 }

@@ -4,18 +4,18 @@ public class Product {
     private String barcode;
     private String productName;
     private int price_x100;
-    private String supplyer;
+    private String supplier;
 
     public Product() {
         super();
     }
 
-    public Product(String barcode, String productName, int price_x100, String supplyer) {
+    public Product(String barcode, String productName, int price_x100, String supplier) {
         super();
         this.barcode = barcode;
         this.productName = productName;
         this.price_x100 = price_x100;
-        this.supplyer = supplyer;
+        this.supplier = supplier;
     }
 
     public String getBarcode() {
@@ -30,8 +30,8 @@ public class Product {
         return price_x100;
     }
 
-    public String getSupplyer() {
-        return supplyer;
+    public String getSupplier() {
+        return supplier;
     }
 
     public void setBarcode(String barcode) {
@@ -46,7 +46,12 @@ public class Product {
         this.price_x100 = price_x100;
     }
 
-    public void setSupplyer(String supplyer) {
-        this.supplyer = supplyer;
+    public void setSupplier(String supplier) {
+        this.supplier = supplier;
+    }
+
+    public String toString() {
+        return "barcode=" + barcode + "\nproductName=" + productName + "\nprice_x100=" + price_x100
+                + "\nsupplier=" + supplier + "\n";
     }
 }
