@@ -9,7 +9,7 @@
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}",
-            "console":"externalTerminal"
+            "console":"integratedTerminal"
         },
         {
             "type": "java",

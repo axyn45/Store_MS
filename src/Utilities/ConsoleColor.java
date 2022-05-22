@@ -11,14 +11,14 @@ public class ConsoleColor {
     public final String white = "\u001B[37m";
 
     public void printRedText(String text) {
-        System.out.print(red + text + reset);
+        System.out.println(red + text + reset);
     }
 
     public void printGreenText(String text) {
-        System.out.print(green + text + reset);
+        System.out.println(green + text + reset);
     }
 
     public void printYellowText(String text) {
-        System.out.print(yellow + text + reset);
+        System.out.println(yellow + text + reset);
     }
 }

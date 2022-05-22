@@ -3,7 +3,6 @@ package src.Services;
 import java.util.List;
 import java.util.Scanner;
 
-
 import src.DAO.IProductDAO;
 import src.DataType.Product;
 import src.DataType.User;
@@ -20,11 +19,17 @@ public class ProductMaintainance {
     private UIUX util = new UIUX();
     private DataValidation validate = new DataValidation();
     private ConsoleColor color = new ConsoleColor();
+    private Scanner sc=null;
 
-    public ProductMaintainance(User user) {
+    public ProductMaintainance(User user,Scanner sc) {
         this.dbc = new DatabaseConnection(); // 连接数据库
+        this.sc=sc;
         productDAO = DAOFactory.getIProductDAOInstance(this.dbc.getConnection());
         this.user = user;
+    }
+
+    protected void finalize() {
+        this.dbc.close();
     }
 
     public void importFromExcel() {
@@ -41,11 +46,9 @@ public class ProductMaintainance {
             return;
         }
         MaintainanceUI();
-        Scanner sc = new Scanner(System.in);
-        int choice;
+        int choice = Integer.parseInt(sc.nextLine());
 
         while (true) {
-            choice = sc.nextInt();
             switch (choice) {
             case 1:
                 // TODO excel
@@ -61,15 +64,17 @@ public class ProductMaintainance {
                 while(searchProduct());
                 break;
             case 5:
-                sc.close();
+                 
                 util.cls();
                 return;
             default:
                 System.out.println("Invalid choice!");
                 break;
             }
+            MaintainanceUI();
+            sc = new Scanner(System.in);
+            choice = sc.nextInt();
         }
-        // sc.close();
 
     }
 
@@ -113,12 +118,13 @@ public class ProductMaintainance {
             System.out.println("Error: " + e.getMessage());
         }
         System.out.println("\nPress ENTER to add another product or type anything to go back...");
-        Scanner sc = new Scanner(System.in);
         if (!sc.nextLine().equals("")) {
             util.cls();
+             
             return false;
         }
         util.cls();
+         
         return true;
 
         // Trur for continue, False for go back
@@ -130,11 +136,11 @@ public class ProductMaintainance {
     }
 
     public String manualAdd_getBarcode() {
-        Scanner sc = new Scanner(System.in);
         manualAdd_showWizard();
         System.out.println("Product Barcode: ");
         String barcode = sc.nextLine();
         if (barcode.equals("exit")) {
+             
             return null;
         }
         while (!validate.isValidBarcode(barcode)) {
@@ -146,18 +152,20 @@ public class ProductMaintainance {
             System.out.println("Product Barcode: ");
             barcode = sc.nextLine();
             if (barcode.equals("exit")) {
+                 
                 return null;
             }
         }
+         
         return barcode;
     }
 
     public String manualAdd_getName() {
-        Scanner sc = new Scanner(System.in);
         manualAdd_showWizard();
         System.out.println("Product Name: ");
         String name = sc.nextLine();
         if (name.equals("exit")) {
+             
             return null;
         }
         while (name == null) {
@@ -168,19 +176,21 @@ public class ProductMaintainance {
             System.out.println("Product Name: ");
             name = sc.nextLine();
             if (name.equals("exit")) {
+                 
                 return null;
             }
         }
+         
         return name;
     }
 
     public int manualAdd_getPrice_x100() {
-        Scanner sc = new Scanner(System.in);
         manualAdd_showWizard();
         System.out.println("Product Price: ");
         String price = sc.nextLine();
 
         if (price.equals("exit")) {
+             
             return -1;
         }
         int price_x100 = validate.isValidPrice(price);
@@ -192,51 +202,56 @@ public class ProductMaintainance {
             System.out.println("Product Price: ");
             price = sc.nextLine();
             if (price.equals("exit")) {
+                 
                 return -1;
             }
             price_x100 = validate.isValidPrice(price);
         }
+         
         return price_x100;
     }
 
     public String manualAdd_getSupplier() {
-        Scanner sc = new Scanner(System.in);
         manualAdd_showWizard();
         System.out.println("Product Supplier: ");
+         
         return sc.nextLine();
     }
 
     public boolean searchProduct() {
         System.out.println("Tips: Try type relevant information to search products.");
         System.out.println("      Type \"exit\" to quit searching.");
-        System.out.println("\tSearch: ");
-        Scanner sc = new Scanner(System.in);
+        System.out.println("Search: ");
         String key = sc.nextLine();
 
         String search_query;
 
         List<Product> products;
         if (key.equals("exit")) {
+             
             return false;
         }
         util.cls();
-        search_query = "SELECT * FROM product WHERE barcode LIKE '%" + key + "%' OR productName LIKE '%" + key
-                + "%' OR price LIKE '%" + key + "%' OR supplier LIKE '%" + key + "%'";
+        search_query = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode LIKE '%" + key + "%' OR productName LIKE '%" + key
+                + "%' OR price_x100 LIKE '%" + key + "%' OR supplier LIKE '%" + key + "%'";
 
         products = null;
         try {
             products = productDAO.query(search_query);
             listProducts(products, key);
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("No such product.");
         }
         
         System.out.println("\nPress ENTER to search again or type anything to go back.");
         if (!sc.nextLine().equals("")) {
             util.cls();
+             
             return false;
         }
         util.cls();
+         
         return true;
         //True for continue, False for go back
     }
@@ -256,15 +271,19 @@ public class ProductMaintainance {
 
     public void listProducts(List<Product> products, String key) {
         util.cls();
-        System.out.println("====Product List====");
+        if(products.size()!=0){
         System.out.println("Found " + products.size() + " products about \"" + key + "\".");
-        System.out.println("No.\tBarcode\tProduct Name\tPrice\tSupplier");
-        int count = 1;
+        System.out.println("====Product List====");
+        
+        System.out.println("No.\tBarcode\t\tName\t\tPrice\tSupplier");
+        }
+        else{
+            System.out.println("No such product.");
+        }
 
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println(count + '\t' + products.get(i).getBarcode() + '\t' + products.get(i).getProductName()
-                    + '\t' + util.price2string(products.get(i).getPrice_x100()) + '\t' + products.get(i).getSupplier());
-            count++;
+        for (int i = 1; i <= products.size(); i++) {
+            System.out.println(Integer.toString(i) + "\t" + products.get(i-1).getBarcode() + "\t\t" + products.get(i-1).getProductName()
+                    + "\t\t" + util.price2string(products.get(i-1).getPrice_x100()) + "\t" + products.get(i-1).getSupplier());
         }
     }
 }

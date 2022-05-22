@@ -1,15 +1,14 @@
 package src.Services;
 
-import java.security.MessageDigest;
-// import java.util.HashMap;
-// import java.util.Map;
 import java.util.Scanner;
 
 import src.DAO.IUserDAO;
 import src.DataType.User;
 import src.Factory.DAOFactory;
+import src.Utilities.ConsoleColor;
 import src.Utilities.DataValidation;
 import src.Utilities.DatabaseConnection;
+import src.Utilities.UIUX;
 
 /**
  * 数据层完成后最终一定要交给业务层进行调用，在业务层里面就需要通过工厂取得数据层接口对象， 业务层的接口名称为 XxxxService，保存在
@@ -21,11 +20,19 @@ public class UserService {
     private IUserDAO userDAO; // 由工厂统一提供的 dao 实现类对象
     private User user;
     private DataValidation validate=new DataValidation();
+    private UIUX util=new UIUX();
+    private ConsoleColor color=new ConsoleColor();
+    private Scanner sc=null;
 
-    public UserService() {
+    public UserService(Scanner sc) {
         this.dbc = new DatabaseConnection(); // 连接数据库
+        this.sc=sc;
         this.userDAO = DAOFactory.getIUserDAOInstance(this.dbc.getConnection());
     } // 从工厂类获取 dao 实现类对象
+
+    protected void finalize() {
+        this.dbc.close();
+    }
 
     /**
      * 用户登录检查
@@ -50,11 +57,10 @@ public class UserService {
 
     public User login() {
         int tries = 3;
-        Scanner sc = new Scanner(System.in);
-
-        System.out.println("Login");
+        
         while (tries > 0) {
-
+            util.cls();
+            System.out.println("Login\n");
             // Input username
             System.out.println("Username: ");
             String username = sc.nextLine();
@@ -62,10 +68,12 @@ public class UserService {
                 user = userDAO.getById(username);
             } catch (Exception e) {
                 e.printStackTrace();
+                
             }
             if (user == null) {
                 System.out.println("User does not exist!");
                 // tries--;
+                util.delay(2000);
                 continue;
             }
 
@@ -73,59 +81,80 @@ public class UserService {
             System.out.println("Password: ");
             String password = sc.nextLine();
             if (user.getPassword().equals(password)) {
-                System.out.println("Login successful!");
-                sc.close();
+                color.printGreenText("Login successful!");
+                // 
+                util.delay(2000);
                 return user;
             } else {
-                System.out.println("Wrong password!");
+                color.printRedText("Wrong password!");
                 user = null;
                 tries--;
+                util.delay(2000);
                 continue;
             }
         }
-        System.out.println("You have no more chances left.");
-        sc.close();
+        util.cls();
+        color.printRedText("You have no more chances left.");
         return null;
     }
 
-    public void changePassword() {
+    public boolean changePassword() {
+        if(user==null){
+            color.printYellowText("Please login first!\nReturn in 2 seconds...");
+            util.delay(2000);
+            return false;
+        }
         System.out.println("Please input your old password for confirmation: ");
-        Scanner sc = new Scanner(System.in);
         int tries = 3;
         while (!sc.nextLine().equals(user.getPassword())) {
             tries--;
+            util.cls();
             if (tries != 0) {
-                System.out.println("Wrong password! " + tries + " chances left.");
+                util.cls();
+                color.printRedText("Wrong password! " + tries + " chances left.");
                 System.out.println("Please input your old password for confirmation: ");
             } else {
-                System.out.println("You have no more chances left.");
-                sc.close();
-                return;
+                color.printRedText("You have no more chances left.");
+                
+                return false;
             }
+            
         }
+        
 
         System.out.println("Please input your new password: ");
         String newPassword = sc.nextLine();
+        util.cls();
 
         while (validate.isValidPassword(newPassword)) {
             System.out.println("Please input your new password: ");
             newPassword = sc.nextLine();
         }
+        util.cls();
 
         System.out.println("Re-enter your new password to confirm your change: ");
         if (sc.nextLine().equals(newPassword)) {
             user.setPassword(newPassword);
             try {
                 userDAO.update(user);
+                color.printGreenText("Password changed successfully!");
+                
+                return true;
             } catch (Exception e) {
                 e.printStackTrace();
+                System.out.println("Error occured when changing password!\nReturn in 2 seconds...");
+                util.delay(2000);
+                
+                return false;
             }
-            System.out.println("Password changed successfully!");
+            
         } else {
-            System.out.println("Password change cancelled!");
+            color.printRedText("Dosen't match with your priviously input!");
+            System.out.println("Password change cancelled! Return in 2 seconds...");
+            util.delay(2000);
+            
+            return false;
         }
-        sc.close();
     }
-
     
 }

@@ -34,8 +34,7 @@ public class DatabaseConnection {
              * InputStream is = new FileInputStream(classPath + "/"+ JDBCPROPERTY);
              */
             // 使用类加载器加载资源
-            InputStream is = DatabaseConnection.class.getClassLoader()
-                    .getResourceAsStream("resource/" + JDBCPROPERTY);
+            InputStream is = DatabaseConnection.class.getResourceAsStream("/src/resource/" + JDBCPROPERTY);
             properties.load(new InputStreamReader(is, "utf-8"));
             is.close();
             DBDRIVER = properties.getProperty("DBDRIVER");
@@ -52,9 +51,10 @@ public class DatabaseConnection {
     // 构造方法，实例化对象时创建连接对象
     public DatabaseConnection() {
         try {
-            this.conn = DriverManager.getConnection(DBURL, DBUSER, PASSWORD);
+            this.conn = DriverManager.getConnection(DBURL+"&user="+DBUSER+"&password="+PASSWORD);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("");
         }
     }
 

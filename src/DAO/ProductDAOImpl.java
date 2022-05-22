@@ -20,7 +20,7 @@ public class ProductDAOImpl implements IProductDAO {
     }
 
     public boolean insert(Product product) throws Exception {
-        String sql = "INSERT INTO product(barcode,productName,price,supplier) " + "VALUES(?,?,?,?)";
+        String sql = "INSERT INTO product(barcode,productName,price_x100,supplier) " + "VALUES(?,?,?,?)";
         this.pstmt = this.conn.prepareStatement(sql);
         this.pstmt.setString(1, product.getBarcode());
         this.pstmt.setString(2, product.getProductName());
@@ -34,7 +34,7 @@ public class ProductDAOImpl implements IProductDAO {
     }
 
     public boolean update(Product product) throws Exception {
-        String sql = "UPDATE product SET name=? ,price=?,stock=? WHERE barcode=?";
+        String sql = "UPDATE product SET barcode=? ,productName=?,price_x100=?,supplier=? WHERE barcode=?";
         this.pstmt = this.conn.prepareStatement(sql);
         this.pstmt.setString(1, product.getBarcode());
         this.pstmt.setString(2, product.getProductName());
@@ -59,15 +59,15 @@ public class ProductDAOImpl implements IProductDAO {
     }
 
     public Product getByBarcode(String barcode) throws Exception {
-        String sql = "SELECT * FROM product WHERE barcode=?";
+        String sql = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode=?";
         this.pstmt = this.conn.prepareStatement(sql);
         this.pstmt.setString(1, barcode);
         ResultSet rs = this.pstmt.executeQuery();
         if (rs.next()) {
             Product product = new Product();
             product.setBarcode(rs.getString("barcode"));
-            product.setProductName(rs.getString("name"));
-            product.setPrice_x100(rs.getInt("price"));
+            product.setProductName(rs.getString("productName"));
+            product.setPrice_x100(rs.getInt("price_x100"));
             product.setSupplier(rs.getString("supplier"));
             return product;
         } else {
@@ -83,8 +83,8 @@ public class ProductDAOImpl implements IProductDAO {
         List<Product> products = new ArrayList<Product>();
         while (rs.next()) {
             product.setBarcode(rs.getString("barcode"));
-            product.setProductName(rs.getString("name"));
-            product.setPrice_x100(rs.getInt("price"));
+            product.setProductName(rs.getString("productName"));
+            product.setPrice_x100(rs.getInt("price_x100"));
             product.setSupplier(rs.getString("supplier"));
             products.add(product);
         }

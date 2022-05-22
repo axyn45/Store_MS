@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-import com.mysql.cj.xdevapi.Schema.Validation;
-
 import src.DAO.ICashierDAO;
 import src.DAO.IProductDAO;
+import src.DataType.Record;
 import src.DataType.User;
 import src.Factory.DAOFactory;
 import src.Utilities.DataValidation;
@@ -20,21 +19,25 @@ public class Cashier {
     private ICashierDAO cashierDAO; // 由工厂统一提供的 dao 实现类对象
     private IProductDAO productDAO;
     private src.DataType.Product product;
-    private src.DataType.Record record;
+    private src.DataType.Record record=new Record();
     private src.DataType.User user;
     private UIUX util = new UIUX();
     private DataValidation validate = new DataValidation();
+    private Scanner sc=null;
 
     // 从工厂类获取 dao 实现类对象
-    public Cashier(User user) {
+    public Cashier(User user,Scanner sc) {
         this.dbc = new DatabaseConnection(); // 连接数据库
+        this.sc=sc;
         this.cashierDAO = DAOFactory.getICashierDAOInstance(this.dbc.getConnection());
         this.productDAO = DAOFactory.getIProductDAOInstance(this.dbc.getConnection());
         this.user = user;
     }
+    protected void finalize() {
+        this.dbc.close();
+    }
 
     public boolean AddTransaction() {
-        Scanner sc = new Scanner(System.in);
         String barcode = null;
         for (int i = 0; i == 0;) {
             System.out.println("Please input the barcode: ");
@@ -53,6 +56,7 @@ public class Cashier {
                 product = productDAO.getByBarcode(barcode);
                 i = 1;
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("Product not found! Please try again.");
                 util.delay(2000);
             }
@@ -62,7 +66,8 @@ public class Cashier {
         record.setBarcode(barcode);
         record.setProductName(product.getProductName());
         record.setPrice_x100(product.getPrice_x100());
-        record.setQuantity(sc.nextInt());
+        System.out.printf("Please input the quantity: ");
+        record.setQuantity(Integer.parseInt(sc.nextLine()));
         record.setOperator(user.getUserName());
         record.setTime("now()");
 
@@ -70,19 +75,18 @@ public class Cashier {
             cashierDAO.insert(record);
             System.out.println("Transaction added successfully!");
             util.cls();
-            sc.close();
+             
             return true;
         } catch (Exception e) {
             System.out.println("Error in adding transaction!");
             util.cls();
-            sc.close();
+             
             return false;
         }
     }
 
-    public void searchByDate() {
+    public boolean searchByDate() {
         System.out.println("Please input the date: ");
-        Scanner sc = new Scanner(System.in);
         String date = sc.nextLine();
 
         util.cls();
@@ -95,10 +99,11 @@ public class Cashier {
             util.cls();
             System.out.println("Please input the date: ");
             date = sc.nextLine();
+            arrOfDate = validate.isValidDate(date);
         }
         List<src.DataType.Record> records = null;
         try {
-            records = cashierDAO.query("select * from record where time like '%" + date + "%'");
+            records = cashierDAO.query("select transaction_id,barcode,productName,price_x100,quantity,operator,time from salesrecords where time like '%" + date + "%'");
         } catch (Exception e) {
             System.out.println("Error in querying transactions!");
             util.cls();
@@ -106,11 +111,17 @@ public class Cashier {
 
         ListIterator<src.DataType.Record> it = records.listIterator();
         listDateQuery(arrOfDate, it);
-        sc.close();
+        if(sc.nextLine().equals("exit")){
+             
+            return false;
+        }
+         
+        return true;
     }
 
     public void export2sheet() {
         // TODO export to excel
+        
     }
 
     public void export2text() {
@@ -119,7 +130,6 @@ public class Cashier {
 
     public void dataExportMenu() {
         exportUI();
-        Scanner sc = new Scanner(System.in);
         int option = sc.nextInt();
         while (true) {
             switch (option) {
@@ -131,6 +141,7 @@ public class Cashier {
                 break;
             case 3:
                 util.cls();
+                 
                 return;
             }
             exportUI();
@@ -140,7 +151,7 @@ public class Cashier {
 
     public void exportUI() {
         util.cls();
-        // TODO show menu
+
         System.out.println("====Data Export Menu====\n");
         System.out.println("1. Export to Excel");
         System.out.println("2. Export to Text");
@@ -152,7 +163,7 @@ public class Cashier {
         util.cls();
         // show menu
         System.out.println("Transaction records of " + date[0] + "-" + date[1] + "-" + date[2]);
-        System.out.println("Transaction ID\tBarcode\tProduct Name\tPrice\tQuantity\tOperator\tTime");
+        System.out.println("\nTransaction ID\tBarcode\tProduct Name\tPrice\tQuantity\tOperator\tTime");
         System.out.println("--------------\t-------\t------------\t-----\t--------\t--------\t----");
         src.DataType.Record record;
         int amount_x100 = 0;
@@ -165,14 +176,14 @@ public class Cashier {
                 total_quantity += record.getQuantity();
                 amount_x100 += record.getQuantity() * record.getPrice_x100();
             }
-            System.out.println(record.getTransaction_id() + "\t" + record.getBarcode() + "\t" + record.getProductName()
-                    + "\t" + record.getPrice_x100() + "\t" + record.getQuantity() + "\t" + record.getOperator() + "\t"
+            System.out.println(record.getTransaction_id() + "\t\t" + record.getBarcode() + "\t" + record.getProductName()
+                    + "\t\t" + util.price2string(record.getPrice_x100()) + "\t" + record.getQuantity() + "\t\t" + record.getOperator() + "\t\t"
                     + record.getTime());
         }
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
         System.out.println("Total quantity: " + total_quantity + "\tTotal products: " + products.size()
                 + "\tTotal amount: " + util.price2string(amount_x100));
-        System.out.println("\nPress ENTER to continue...");
+        System.out.println("\nPress ENTER to continue searching...");
         util.wait4enter();
     }
 
