@@ -99,9 +99,9 @@ public class CashierDAOImpl implements ICashierDAO{
         this.pstmt = this.conn.prepareStatement(qstring);
         ResultSet rs = this.pstmt.executeQuery();
         
-        Record record = new Record();
         List<Record> records = new ArrayList<Record>();
         while (rs.next()) {
+            Record record = new Record();
             record.setTransaction_id(rs.getString("transaction_id"));
             record.setBarcode(rs.getString("barcode"));
             record.setProductName(rs.getString("productName"));

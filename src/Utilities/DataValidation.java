@@ -28,9 +28,10 @@ public class DataValidation {
             } else {
                 return -1;
             }
-        } else {
-            return -1;
+        } else if(dotSub.length==1){
+            return Integer.parseInt(dotSub[0]+"00");
         }
+        else return -1;
     }
 
     public boolean isValidPassword(String password) {

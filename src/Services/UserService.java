@@ -71,6 +71,7 @@ public class UserService {
                 
             }
             if (user == null) {
+                
                 System.out.println("User does not exist!");
                 // tries--;
                 util.delay(2000);
@@ -80,6 +81,7 @@ public class UserService {
             // Input password
             System.out.println("Password: ");
             String password = sc.nextLine();
+            util.cls();
             if (user.getPassword().equals(password)) {
                 color.printGreenText("Login successful!");
                 // 

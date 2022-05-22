@@ -79,9 +79,10 @@ public class ProductDAOImpl implements IProductDAO {
         // 可以后续再实现，但是该方法不能删除，因为实现接口，必须实现接口的所有方法，即使该方法暂时没代码
         this.pstmt = this.conn.prepareStatement(qstring);
         ResultSet rs = this.pstmt.executeQuery();
-        Product product = new Product();
+        
         List<Product> products = new ArrayList<Product>();
         while (rs.next()) {
+            Product product = new Product();
             product.setBarcode(rs.getString("barcode"));
             product.setProductName(rs.getString("productName"));
             product.setPrice_x100(rs.getInt("price_x100"));

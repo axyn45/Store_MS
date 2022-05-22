@@ -63,13 +63,15 @@ public class Driver {
                 }
                 util.delay(1000);
                 break;
+
             case 2:
-                while (cashier.searchByDate())
-                    ;
+                while (cashier.searchByDate());
                 break;
+
             case 3:
                 pm.menu();
                 break;
+
             case 4:
                 if (us.changePassword()) {
                     user = null;
@@ -77,20 +79,20 @@ public class Driver {
                     util.delay(2000);
                 }
                 break;
+
             case 5:
-                // TODO: exportData();
+                cashier.dataExportMenu();
                 break;
+
             case 6:
+                util.cls();
                 System.out.println("\nQuitting...");
-
                 util.delay(1000);
-                 
                 return;
+                
             default:
-
                 util.cls();
                 System.out.println("\nInvalid option!");
-
             }
         }
     }

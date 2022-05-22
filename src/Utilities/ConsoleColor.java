@@ -21,4 +21,8 @@ public class ConsoleColor {
     public void printYellowText(String text) {
         System.out.println(yellow + text + reset);
     }
+
+    public void printCyanText(String text) {
+        System.out.println(cyan + text + reset);
+    }
 }

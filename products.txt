@@ -1,0 +1,9 @@
+000007
+Glue
+10
+ite Industry
+
+000008
+Drill
+149.9
+ite Industry

@@ -1,8 +1,12 @@
 package src.Services;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import jxl.Sheet;
+import jxl.Workbook;
 import src.DAO.IProductDAO;
 import src.DataType.Product;
 import src.DataType.User;
@@ -19,11 +23,11 @@ public class ProductMaintainance {
     private UIUX util = new UIUX();
     private DataValidation validate = new DataValidation();
     private ConsoleColor color = new ConsoleColor();
-    private Scanner sc=null;
+    private Scanner sc = null;
 
-    public ProductMaintainance(User user,Scanner sc) {
+    public ProductMaintainance(User user, Scanner sc) {
         this.dbc = new DatabaseConnection(); // 连接数据库
-        this.sc=sc;
+        this.sc = sc;
         productDAO = DAOFactory.getIProductDAOInstance(this.dbc.getConnection());
         this.user = user;
     }
@@ -32,8 +36,83 @@ public class ProductMaintainance {
         this.dbc.close();
     }
 
+
     public void importFromExcel() {
-        // TODO read from excel
+        List<Product> products = new ArrayList<Product>();
+        
+
+        Workbook workbook = null;
+        try {
+            workbook = Workbook.getWorkbook(new File("products.xls"));
+            Sheet sheet = workbook.getSheet(0);
+            // System.out.println(sheet.getRows());
+            for (int i = 0; i<sheet.getRows(); i++) {
+                Product product = new Product();
+                product.setBarcode(sheet.getCell(0, i).getContents());
+                product.setProductName(sheet.getCell(1, i).getContents());
+                product.setPrice_x100(validate.isValidPrice(sheet.getCell(2, i).getContents()));
+                product.setSupplier(sheet.getCell(3, i).getContents());
+                products.add(product);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        int listLen = products.size();
+        int successCount = 0;
+        for (int i = 0; i < listLen; i++) {
+            try {
+                productDAO.insert(products.get(i));
+                successCount++;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (successCount != 0) {
+            color.printGreenText(successCount + " products added successfully!");
+        }
+        if (successCount != listLen) {
+            color.printRedText(Integer.toString(listLen - successCount) + " products failed to be added!");
+        }
+        util.delay(2000);
+    }
+
+    public void importFromText() {
+        File file = null;
+        Scanner fsc = null;
+        Product product = new Product();
+        try {
+            file = new File("products.txt");
+            fsc = new Scanner(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fsc.close();
+            return;
+        }
+
+        String buffer = null;
+        int successCount=0;
+        try {
+            while (fsc.hasNextLine()) {
+                buffer = fsc.nextLine();
+                while (buffer == null || buffer.equals("")) {
+                    buffer = fsc.nextLine();
+                }
+                product.setBarcode(buffer);
+                product.setProductName(fsc.nextLine());
+                product.setPrice_x100(validate.isValidPrice(fsc.nextLine()));
+                product.setSupplier(fsc.nextLine());
+                productDAO.insert(product);
+                successCount++;
+            }
+            color.printGreenText(successCount + " products added successfully!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            color.printRedText("Encountered a format issue in file! Quitting...");
+        
+        }
+        fsc.close();
+        util.delay(2000);
     }
 
     public void menu() {
@@ -51,20 +130,21 @@ public class ProductMaintainance {
         while (true) {
             switch (choice) {
             case 1:
-                // TODO excel
+                importFromExcel();
                 break;
             case 2:
-                // TODO text
+                importFromText();
                 break;
             case 3:
                 while (manualAdd())
                     ;
                 break;
             case 4:
-                while(searchProduct());
+                while (searchProduct())
+                    ;
                 break;
             case 5:
-                 
+
                 util.cls();
                 return;
             default:
@@ -76,10 +156,6 @@ public class ProductMaintainance {
             choice = sc.nextInt();
         }
 
-    }
-
-    public void importFromText() {
-        // TODO read from text
     }
 
     public boolean manualAdd() {
@@ -112,6 +188,10 @@ public class ProductMaintainance {
         util.cls();
         try {
             productDAO.insert(product);
+            color.printCyanText("Barcode: "+product.getBarcode());
+            color.printCyanText("Name: "+product.getProductName());
+            color.printCyanText("Price: "+util.price2string(product.getPrice_x100()));
+            color.printCyanText("Supplier: "+product.getSupplier());
             color.printGreenText("Successfully added!");
             product.toString();
         } catch (Exception e) {
@@ -120,11 +200,11 @@ public class ProductMaintainance {
         System.out.println("\nPress ENTER to add another product or type anything to go back...");
         if (!sc.nextLine().equals("")) {
             util.cls();
-             
+
             return false;
         }
         util.cls();
-         
+
         return true;
 
         // Trur for continue, False for go back
@@ -140,7 +220,7 @@ public class ProductMaintainance {
         System.out.println("Product Barcode: ");
         String barcode = sc.nextLine();
         if (barcode.equals("exit")) {
-             
+
             return null;
         }
         while (!validate.isValidBarcode(barcode)) {
@@ -152,11 +232,11 @@ public class ProductMaintainance {
             System.out.println("Product Barcode: ");
             barcode = sc.nextLine();
             if (barcode.equals("exit")) {
-                 
+
                 return null;
             }
         }
-         
+
         return barcode;
     }
 
@@ -165,7 +245,7 @@ public class ProductMaintainance {
         System.out.println("Product Name: ");
         String name = sc.nextLine();
         if (name.equals("exit")) {
-             
+
             return null;
         }
         while (name == null) {
@@ -176,11 +256,11 @@ public class ProductMaintainance {
             System.out.println("Product Name: ");
             name = sc.nextLine();
             if (name.equals("exit")) {
-                 
+
                 return null;
             }
         }
-         
+
         return name;
     }
 
@@ -190,7 +270,7 @@ public class ProductMaintainance {
         String price = sc.nextLine();
 
         if (price.equals("exit")) {
-             
+
             return -1;
         }
         int price_x100 = validate.isValidPrice(price);
@@ -202,19 +282,19 @@ public class ProductMaintainance {
             System.out.println("Product Price: ");
             price = sc.nextLine();
             if (price.equals("exit")) {
-                 
+
                 return -1;
             }
             price_x100 = validate.isValidPrice(price);
         }
-         
+
         return price_x100;
     }
 
     public String manualAdd_getSupplier() {
         manualAdd_showWizard();
         System.out.println("Product Supplier: ");
-         
+
         return sc.nextLine();
     }
 
@@ -228,12 +308,13 @@ public class ProductMaintainance {
 
         List<Product> products;
         if (key.equals("exit")) {
-             
+
             return false;
         }
         util.cls();
-        search_query = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode LIKE '%" + key + "%' OR productName LIKE '%" + key
-                + "%' OR price_x100 LIKE '%" + key + "%' OR supplier LIKE '%" + key + "%'";
+        search_query = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode LIKE '%" + key
+                + "%' OR productName LIKE '%" + key + "%' OR price_x100 LIKE '%" + key + "%' OR supplier LIKE '%" + key
+                + "%'";
 
         products = null;
         try {
@@ -243,25 +324,25 @@ public class ProductMaintainance {
             e.printStackTrace();
             System.out.println("No such product.");
         }
-        
+
         System.out.println("\nPress ENTER to search again or type anything to go back.");
         if (!sc.nextLine().equals("")) {
             util.cls();
-             
+
             return false;
         }
         util.cls();
-         
+
         return true;
-        //True for continue, False for go back
+        // True for continue, False for go back
     }
 
     public void MaintainanceUI() {
         // menu
         util.cls();
         System.out.println("====Product Maintainance====");
-        System.out.println("1. Import from Excel");
-        System.out.println("2. Import from Text");
+        System.out.println("1. Import from Excel sheet");
+        System.out.println("2. Import from text");
         System.out.println("3. Manual Input");
         System.out.println("4. Search Product");
         System.out.println("5. Back");
@@ -271,19 +352,20 @@ public class ProductMaintainance {
 
     public void listProducts(List<Product> products, String key) {
         util.cls();
-        if(products.size()!=0){
-        System.out.println("Found " + products.size() + " products about \"" + key + "\".");
-        System.out.println("====Product List====");
-        
-        System.out.println("No.\tBarcode\t\tName\t\tPrice\tSupplier");
-        }
-        else{
+        if (products.size() != 0) {
+            System.out.println("Found " + products.size() + " products about \"" + key + "\".");
+            System.out.println("====Product List====");
+
+            System.out.println("No.\tBarcode\t\tName\t\tPrice\tSupplier");
+        } else {
             System.out.println("No such product.");
         }
 
         for (int i = 1; i <= products.size(); i++) {
-            System.out.println(Integer.toString(i) + "\t" + products.get(i-1).getBarcode() + "\t\t" + products.get(i-1).getProductName()
-                    + "\t\t" + util.price2string(products.get(i-1).getPrice_x100()) + "\t" + products.get(i-1).getSupplier());
+            System.out.println(Integer.toString(i) + "\t" + products.get(i - 1).getBarcode() + "\t\t"
+                    + products.get(i - 1).getProductName() + "\t\t"
+                    + util.price2string(products.get(i - 1).getPrice_x100()) + "\t"
+                    + products.get(i - 1).getSupplier());
         }
     }
 }
