@@ -50,7 +50,7 @@ public class Cashier {
         this.dbc.close();
     }
 
-    public boolean AddTransaction() {
+    public void AddTransaction() {
         util.cls();
         String barcode = null;
         for (int i = 0; i == 0;) {
@@ -88,19 +88,17 @@ public class Cashier {
         record.setQuantity(Integer.parseInt(qt));
         record.setOperator(user.getUserName());
         record.setTime("now()");
-
+        util.cls();
         try {
             cashierDAO.insert(record);
-            System.out.println("Transaction added successfully!");
-            util.cls();
+            color.printGreenText("Transaction added successfully!");
 
-            return true;
         } catch (Exception e) {
-            System.out.println("Error in adding transaction!");
-            util.cls();
-
-            return false;
+            color.printRedText("Error in adding transaction!");
+            
         }
+        util.delay(2000);
+        return;
     }
 
     public boolean searchByDate() {

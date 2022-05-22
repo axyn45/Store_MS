@@ -101,6 +101,7 @@ public class UserService {
     }
 
     public boolean changePassword() {
+        util.cls();
         if(user==null){
             color.printYellowText("Please login first!\nReturn in 2 seconds...");
             util.delay(2000);
@@ -123,7 +124,7 @@ public class UserService {
             
         }
         
-
+        util.cls();
         System.out.println("Please input your new password: ");
         String newPassword = sc.nextLine();
         util.cls();
@@ -133,7 +134,6 @@ public class UserService {
             newPassword = sc.nextLine();
         }
         util.cls();
-
         System.out.println("Re-enter your new password to confirm your change: ");
         if (sc.nextLine().equals(newPassword)) {
             user.setPassword(newPassword);

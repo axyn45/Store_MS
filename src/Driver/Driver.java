@@ -58,9 +58,7 @@ public class Driver {
             switch (option) {
             case 1:
                 // add new transaction
-                if (!cashier.AddTransaction()) {
-                    System.out.println("Abnormal transaction, quitting back...");
-                }
+                cashier.AddTransaction();
                 util.delay(1000);
                 break;
 
@@ -89,7 +87,7 @@ public class Driver {
                 System.out.println("\nQuitting...");
                 util.delay(1000);
                 return;
-                
+
             default:
                 util.cls();
                 System.out.println("\nInvalid option!");
