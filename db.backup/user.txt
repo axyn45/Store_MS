@@ -1,0 +1,4 @@
+"userName"	"chrName"	"password"	"role"
+"admin"	"管理员"	"2333"	"admin"
+"alex"	"Alex"	"Alex23"	
+"niegang"	"聂刚"	"1234"	"cashier"

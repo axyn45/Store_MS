@@ -1,12 +1,27 @@
 package src.Services;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
+
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
 import src.DAO.IProductDAO;
 import src.DataType.Product;
 import src.DataType.User;
@@ -36,17 +51,15 @@ public class ProductMaintainance {
         this.dbc.close();
     }
 
-
     public void importFromExcel() {
         List<Product> products = new ArrayList<Product>();
-        
 
         Workbook workbook = null;
         try {
             workbook = Workbook.getWorkbook(new File("products.xls"));
             Sheet sheet = workbook.getSheet(0);
             // System.out.println(sheet.getRows());
-            for (int i = 0; i<sheet.getRows(); i++) {
+            for (int i = 0; i < sheet.getRows(); i++) {
                 Product product = new Product();
                 product.setBarcode(sheet.getCell(0, i).getContents());
                 product.setProductName(sheet.getCell(1, i).getContents());
@@ -91,7 +104,7 @@ public class ProductMaintainance {
         }
 
         String buffer = null;
-        int successCount=0;
+        int successCount = 0;
         try {
             while (fsc.hasNextLine()) {
                 buffer = fsc.nextLine();
@@ -109,9 +122,36 @@ public class ProductMaintainance {
         } catch (Exception e) {
             e.printStackTrace();
             color.printRedText("Encountered a format issue in file! Quitting...");
-        
+
         }
         fsc.close();
+        util.delay(2000);
+    }
+
+    public void importFromXML() {
+        util.cls();
+        try {
+            File file = new File("products.xml");
+            SAXReader reader = new SAXReader();
+            Document document = reader.read(file);
+            Element rootElement = document.getRootElement();
+            List<Element> list = rootElement.elements("product");
+            int successCount=0;
+            for (Element element : list) {
+                Product product = new Product();
+                product.setBarcode(element.elementTextTrim("barcode"));
+                product.setProductName(element.elementTextTrim("name"));
+                product.setPrice_x100(Integer.parseInt(element.elementTextTrim("price_x100")));
+                product.setSupplier(element.elementTextTrim("supplier"));
+                productDAO.insert(product);
+                successCount++;
+            }
+            color.printGreenText(successCount + " products added successfully!");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            color.printRedText("Encountered an issue in reading file! Quitting...");
+        }
         util.delay(2000);
     }
 
@@ -132,21 +172,40 @@ public class ProductMaintainance {
             case 1:
                 importFromExcel();
                 break;
+
             case 2:
                 importFromText();
                 break;
+
             case 3:
-                while (manualAdd())
-                    ;
+                importFromXML();
                 break;
+
             case 4:
+                while (manualAdd());
+                break;
+
+            case 5:
+                export2sheet();
+                break;
+            case 6:
+                export2text();
+                break;
+            case 7:
+                export2xml();
+                break;
+            // case 8:
+            //     //TODO delete product
+            //     break;
+            case 8:
                 while (searchProduct())
                     ;
                 break;
-            case 5:
 
+            case 9:
                 util.cls();
                 return;
+
             default:
                 System.out.println("Invalid choice!");
                 break;
@@ -156,6 +215,124 @@ public class ProductMaintainance {
             choice = sc.nextInt();
         }
 
+    }
+
+    // public void deleteWizard(){
+
+    // }
+
+    public void export2sheet(){
+        util.cls();
+
+        List<Product> products = null;
+        try {
+            products = productDAO.query(
+                    "select barcode,productName,price_x100,supplier from product");
+        } catch (Exception e) {
+            System.out.println("Error in querying products!");
+        }
+
+        File file = null;
+        try {
+            file = new File("products_export.xls");
+            file.createNewFile();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        WritableWorkbook workbook = null;
+        WritableSheet sheet = null;
+        try {
+            workbook = Workbook.createWorkbook(file);
+            sheet = workbook.createSheet("Products", 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            sheet.addCell(new Label(0, 0, "Barcode"));
+            sheet.addCell(new Label(1, 0, "Name"));
+            sheet.addCell(new Label(2, 0, "Price"));
+            sheet.addCell(new Label(3, 0, "Supplier"));
+
+            int listLen = products.size();
+            for (int i = 1; i <= listLen; i++) {
+                sheet.addCell(new Label(0, i, products.get(i - 1).getBarcode()));
+                sheet.addCell(new Label(1, i, products.get(i - 1).getProductName()));
+                sheet.addCell(new Label(2, i, util.price2string(products.get(i - 1).getPrice_x100())));
+                sheet.addCell(new Label(3, i, products.get(i - 1).getSupplier()));
+            }
+            workbook.write();
+            workbook.close();
+            color.printGreenText("Successfully exported to sheet!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            color.printRedText("Error in exporting to sheet!");
+        }
+        util.delay(2000);
+        return;
+    }
+
+    public void export2text(){
+        util.cls();
+        List<Product> products = null;
+        try {
+            products = productDAO.query(
+                    "select barcode,productName,price_x100,supplier from product");
+        } catch (Exception e) {
+            System.out.println("Error in querying products!");
+        }
+
+        File file=new File("products_export.txt");
+        try (FileOutputStream fos = new FileOutputStream(file);
+        OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+        BufferedWriter writer = new BufferedWriter(osw)) {
+            int listLen = products.size();
+            for (int i = 0; i < listLen; i++) {
+                writer.append(products.get(i).getBarcode());
+                writer.append("\n");
+                writer.append(products.get(i).getProductName());
+                writer.append("\n");
+                writer.append(Integer.toString(products.get(i).getPrice_x100()));
+                writer.append("\n");
+                writer.append(products.get(i).getSupplier());
+
+                writer.append("\n\n");
+            }
+            writer.close();
+            color.printGreenText("Successfully exported to text file!");
+        } catch (IOException e) {
+            color.printRedText("An error occurred.");
+            e.printStackTrace();
+        }
+        
+        util.delay(2000);
+    }
+
+    public void export2xml(){
+        util.cls();
+        List<Product> products = null;
+        try{
+            products = productDAO.query(
+                "select barcode,productName,price_x100,supplier from product");
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(new File("products_export.xml")), format);
+        Document document = DocumentHelper.createDocument();
+        Element rootElement = document.addElement("class"); // 根节点
+        int successCount=0;
+        for(Product product:products){
+            Element record_xml = rootElement.addElement("product"); // 子节点
+            record_xml.addElement("Barcode").addText(product.getBarcode());
+            record_xml.addElement("product_name").addText(product.getProductName());
+            record_xml.addElement("price_x100").addText(Integer.toString(product.getPrice_x100()));
+            record_xml.addElement("supplier").addText(product.getSupplier());
+            successCount++;
+        }
+        xmlWriter.write(document);
+        color.printGreenText(successCount + " products exported successfully!");
+        }catch(Exception e){
+            e.printStackTrace();
+            color.printRedText("Error in exporting to xml!");
+        }
+        util.delay(2000);
     }
 
     public boolean manualAdd() {
@@ -188,10 +365,10 @@ public class ProductMaintainance {
         util.cls();
         try {
             productDAO.insert(product);
-            color.printCyanText("Barcode: "+product.getBarcode());
-            color.printCyanText("Name: "+product.getProductName());
-            color.printCyanText("Price: "+util.price2string(product.getPrice_x100()));
-            color.printCyanText("Supplier: "+product.getSupplier());
+            color.printCyanText("Barcode: " + product.getBarcode());
+            color.printCyanText("Name: " + product.getProductName());
+            color.printCyanText("Price: " + util.price2string(product.getPrice_x100()));
+            color.printCyanText("Supplier: " + product.getSupplier());
             color.printGreenText("Successfully added!");
             product.toString();
         } catch (Exception e) {
@@ -343,9 +520,13 @@ public class ProductMaintainance {
         System.out.println("====Product Maintainance====");
         System.out.println("1. Import from Excel sheet");
         System.out.println("2. Import from text");
-        System.out.println("3. Manual Input");
-        System.out.println("4. Search Product");
-        System.out.println("5. Back");
+        System.out.println("3. Import from XML");
+        System.out.println("4. Manually Add Product");
+        System.out.println("5. Export to Excel sheet");
+        System.out.println("6. Export to text");
+        System.out.println("7. Export to XML");
+        System.out.println("8. Search Product");
+        System.out.println("9. Back");
         System.out.println("\nPlease input your choice: ");
 
     }

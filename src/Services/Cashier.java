@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
 import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
@@ -194,6 +200,7 @@ public class Cashier {
 
         } catch (Exception e) {
             e.printStackTrace();
+            color.printRedText("Error in exporting to sheet!");
         }
         util.delay(2000);
         return;
@@ -202,6 +209,7 @@ public class Cashier {
     }
 
     public void export2text() {
+        util.cls();
         List<src.DataType.Record> records = null;
         try {
             records = cashierDAO.query(
@@ -241,6 +249,37 @@ public class Cashier {
         util.delay(2000);
     }
 
+    public void export2xml(){
+        util.cls();
+        List<src.DataType.Record> records = null;
+        try{
+        records = cashierDAO.query(
+                "select transaction_id,barcode,productName,price_x100,quantity,operator,time from salesrecords");
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(new File("salesrecords.xml")), format);
+        Document document = DocumentHelper.createDocument();
+        Element rootElement = document.addElement("class"); // 根节点
+        int successCount=0;
+        for(Record record:records){
+            Element record_xml = rootElement.addElement("record"); // 子节点
+            record_xml.addElement("transaction_id").addText(record.getTransaction_id());
+            record_xml.addElement("barcode").addText(record.getBarcode());
+            record_xml.addElement("product_name").addText(record.getProductName());
+            record_xml.addElement("price_x100").addText(Integer.toString(record.getPrice_x100()));
+            record_xml.addElement("quantity").addText(Integer.toString(record.getQuantity()));
+            record_xml.addElement("operator").addText(record.getOperator());
+            record_xml.addElement("time").addText(record.getTime());
+            successCount++;
+        }
+        xmlWriter.write(document);
+        color.printGreenText(successCount + " transaction records exported successfully!");
+        }catch(Exception e){
+            e.printStackTrace();
+            color.printRedText("Error when exporting to xml!");
+        }
+        util.delay(2000);
+    }
+
     public void dataExportMenu() {
         exportUI();
         int option = Integer.parseInt(sc.nextLine());
@@ -253,6 +292,9 @@ public class Cashier {
                 export2text();
                 break;
             case 3:
+                export2xml();
+                break;
+            case 4:
                 return;
             }
             exportUI();
@@ -266,7 +308,8 @@ public class Cashier {
         System.out.println("====Data Export Menu====\n");
         System.out.println("1. Export to Excel");
         System.out.println("2. Export to Text");
-        System.out.println("3. Back");
+        System.out.println("3. Export to XML");
+        System.out.println("4. Back");
         System.out.println("\nPlease input your choice: ");
     }
 

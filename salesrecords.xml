@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<class>
+  <record>
+    <transaction_id>10001</transaction_id>
+    <barcode>001</barcode>
+    <product_name>test1</product_name>
+    <price_x100>500</price_x100>
+    <quantity>1</quantity>
+    <operator>admin</operator>
+    <time>2022-05-18 21:20:26</time>
+  </record>
+  <record>
+    <transaction_id>10002</transaction_id>
+    <barcode>002</barcode>
+    <product_name>test2</product_name>
+    <price_x100>250</price_x100>
+    <quantity>1</quantity>
+    <operator>admin</operator>
+    <time>2022-05-18 21:21:51</time>
+  </record>
+  <record>
+    <transaction_id>10003</transaction_id>
+    <barcode>000001</barcode>
+    <product_name>Apple</product_name>
+    <price_x100>500</price_x100>
+    <quantity>2</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 15:00:53</time>
+  </record>
+  <record>
+    <transaction_id>10004</transaction_id>
+    <barcode>000002</barcode>
+    <product_name>Banana</product_name>
+    <price_x100>720</price_x100>
+    <quantity>3</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 21:13:29</time>
+  </record>
+  <record>
+    <transaction_id>10005</transaction_id>
+    <barcode>000005</barcode>
+    <product_name>Grape</product_name>
+    <price_x100>700</price_x100>
+    <quantity>6</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:21:58</time>
+  </record>
+  <record>
+    <transaction_id>10006</transaction_id>
+    <barcode>000005</barcode>
+    <product_name>Grape</product_name>
+    <price_x100>700</price_x100>
+    <quantity>6</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:22:10</time>
+  </record>
+  <record>
+    <transaction_id>10007</transaction_id>
+    <barcode>000006</barcode>
+    <product_name>Plastic bag</product_name>
+    <price_x100>55</price_x100>
+    <quantity>4</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:24:29</time>
+  </record>
+  <record>
+    <transaction_id>10008</transaction_id>
+    <barcode>000007</barcode>
+    <product_name>Glue</product_name>
+    <price_x100>1000</price_x100>
+    <quantity>2</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:39:28</time>
+  </record>
+  <record>
+    <transaction_id>10009</transaction_id>
+    <barcode>000009</barcode>
+    <product_name>Coat</product_name>
+    <price_x100>49990</price_x100>
+    <quantity>6</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:41:06</time>
+  </record>
+  <record>
+    <transaction_id>10010</transaction_id>
+    <barcode>000009</barcode>
+    <product_name>Coat</product_name>
+    <price_x100>49990</price_x100>
+    <quantity>4</quantity>
+    <operator>admin</operator>
+    <time>2022-05-22 22:42:07</time>
+  </record>
+  <record>
+    <transaction_id>10011</transaction_id>
+    <barcode>000009</barcode>
+    <product_name>Coat</product_name>
+    <price_x100>49990</price_x100>
+    <quantity>5</quantity>
+    <operator>admin</operator>
+    <time>2022-05-23 13:51:48</time>
+  </record>
+</class>

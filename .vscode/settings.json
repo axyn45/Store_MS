@@ -2,7 +2,8 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "c:\\Program Files (x86)\\MySQL\\Connector J 8.0\\mysql-connector-java-8.0.29.jar",
-        "d:\\Java_Referenced_Lib\\jxl-2.6.jar"
+        "d:\\Java_Referenced_Lib\\jxl-2.6.jar",
+        "dom4j-2.1.3.jar"
     ],
     "sqltools.connections": [
         {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+    <product>
+        <barcode>000011</barcode>
+        <name>CD</name>
+        <price_x100>5900</price_x100>
+        <supplier>Band Records</supplier>
+    </product>
+
+    <product>
+        <barcode>000012</barcode>
+        <name>BlurayDisk</name>
+        <price_x100>19900</price_x100>
+        <supplier>Band Entertainment</supplier>
+    </product>
+</class>

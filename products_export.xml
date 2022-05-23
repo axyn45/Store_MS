@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<class>
+  <product>
+    <Barcode>000001</Barcode>
+    <product_name>Apple</product_name>
+    <price_x100>500</price_x100>
+    <supplier>ite</supplier>
+  </product>
+  <product>
+    <Barcode>000002</Barcode>
+    <product_name>Banana</product_name>
+    <price_x100>720</price_x100>
+    <supplier>ite</supplier>
+  </product>
+  <product>
+    <Barcode>000003</Barcode>
+    <product_name>Cake</product_name>
+    <price_x100>1600</price_x100>
+    <supplier>ite</supplier>
+  </product>
+  <product>
+    <Barcode>000004</Barcode>
+    <product_name>Duck</product_name>
+    <price_x100>8800</price_x100>
+    <supplier>ite Farmlands</supplier>
+  </product>
+  <product>
+    <Barcode>000005</Barcode>
+    <product_name>Grape</product_name>
+    <price_x100>700</price_x100>
+    <supplier>ite</supplier>
+  </product>
+  <product>
+    <Barcode>000006</Barcode>
+    <product_name>Plastic bag</product_name>
+    <price_x100>55</price_x100>
+    <supplier>ite Industry</supplier>
+  </product>
+  <product>
+    <Barcode>000007</Barcode>
+    <product_name>Glue</product_name>
+    <price_x100>1000</price_x100>
+    <supplier>ite Industry</supplier>
+  </product>
+  <product>
+    <Barcode>000008</Barcode>
+    <product_name>Drill</product_name>
+    <price_x100>14990</price_x100>
+    <supplier>ite Industry</supplier>
+  </product>
+  <product>
+    <Barcode>000009</Barcode>
+    <product_name>Coat</product_name>
+    <price_x100>49990</price_x100>
+    <supplier>ite Fashions</supplier>
+  </product>
+  <product>
+    <Barcode>000010</Barcode>
+    <product_name>Sweater</product_name>
+    <price_x100>55990</price_x100>
+    <supplier>ite Fashions</supplier>
+  </product>
+  <product>
+    <Barcode>000011</Barcode>
+    <product_name>CD</product_name>
+    <price_x100>5900</price_x100>
+    <supplier>Band Records</supplier>
+  </product>
+  <product>
+    <Barcode>000012</Barcode>
+    <product_name>BlurayDisk</product_name>
+    <price_x100>19900</price_x100>
+    <supplier>Band Entertainment</supplier>
+  </product>
+  <product>
+    <Barcode>001</Barcode>
+    <product_name>test1</product_name>
+    <price_x100>500</price_x100>
+    <supplier>test_supplyer</supplier>
+  </product>
+  <product>
+    <Barcode>002</Barcode>
+    <product_name>test2</product_name>
+    <price_x100>250</price_x100>
+    <supplier>test_supplyer</supplier>
+  </product>
+</class>
