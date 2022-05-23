@@ -56,6 +56,7 @@ public class Cashier {
         for (int i = 0; i == 0;) {
             System.out.println("Please input the barcode: ");
             barcode = sc.nextLine();
+            
             while (!validate.isValidBarcode(barcode)) {
                 color.printRedText("Invalid barcode!");
                 color.printYellowText("A valid barcode contains exactly 6 digits!");

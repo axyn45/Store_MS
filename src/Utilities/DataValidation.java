@@ -1,6 +1,8 @@
 package src.Utilities;
 
 public class DataValidation {
+    private ConsoleColor color=new ConsoleColor();
+
     public boolean isValidBarcode(String barcode) {
         if (barcode.length() != 6)
             return false;
@@ -44,31 +46,31 @@ public class DataValidation {
         if (password != null && password != "") {
             notNull = true;
         } else {
-            System.out.println("Password cannot be empty!");
+            color.printRedText("Password cannot be empty!");
         }
 
         if (password.length() >= 6) {
             lenChk = true;
         } else {
-            System.out.println("Password must be at least 6 characters long!");
+            color.printRedText("Password must be at least 6 characters long!");
         }
 
         if (password.matches(".*[a-z].*")) {
             containsLC = true;
         } else {
-            System.out.println("Password must contain at least one lowercase letter!");
+            color.printRedText("Password must contain at least one lowercase letter!");
         }
 
         if (password.matches(".*[A-Z].*")) {
             containsUC = true;
         } else {
-            System.out.println("Password must contain at least one uppercase letter!");
+            color.printRedText("Password must contain at least one uppercase letter!");
         }
 
         if (password.matches(".*\\d.*")) {
             containsDigit = true;
         } else {
-            System.out.println("Password must contain at least one digit!");
+            color.printRedText("Password must contain at least one digit!");
         }
 
         if (notNull && lenChk && containsLC && containsUC && containsDigit) {

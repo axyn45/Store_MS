@@ -38,8 +38,6 @@ public class Driver {
         int option;
 
         while (true) {
-            
-
             //Login
             if (user == null) {
                 user = us.login();
@@ -83,6 +81,10 @@ public class Driver {
                 break;
 
             case 6:
+                us.signup();
+                break;
+
+            case 7:
                 util.cls();
                 System.out.println("\nQuitting...");
                 util.delay(1000);
@@ -102,7 +104,8 @@ public class Driver {
         System.out.println("3. Merchandise Maintainance");
         System.out.println("4. Change Password");
         System.out.println("5. Export Data");
-        System.out.println("6. Exit");
+        System.out.println("6. Create Account");
+        System.out.println("7. Exit");
         System.out.println("\nCashier: " + user.getChrName());
         System.out.println("\nPlease select an option: ");
     }

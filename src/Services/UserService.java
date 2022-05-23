@@ -19,14 +19,14 @@ public class UserService {
     private DatabaseConnection dbc; // 数据库连接类
     private IUserDAO userDAO; // 由工厂统一提供的 dao 实现类对象
     private User user;
-    private DataValidation validate=new DataValidation();
-    private UIUX util=new UIUX();
-    private ConsoleColor color=new ConsoleColor();
-    private Scanner sc=null;
+    private DataValidation validate = new DataValidation();
+    private UIUX util = new UIUX();
+    private ConsoleColor color = new ConsoleColor();
+    private Scanner sc = null;
 
     public UserService(Scanner sc) {
         this.dbc = new DatabaseConnection(); // 连接数据库
-        this.sc=sc;
+        this.sc = sc;
         this.userDAO = DAOFactory.getIUserDAOInstance(this.dbc.getConnection());
     } // 从工厂类获取 dao 实现类对象
 
@@ -55,9 +55,119 @@ public class UserService {
      * // 无论是否有异常，都需要关闭数据库连接 this.dbc.close(); } return mapResult; }
      */
 
+    public void signup() {
+        util.cls();
+        if (!user.getRole().equals("admin")) {
+            System.out.println(
+                    "You are not authorized to access this page! Contact your administrator for more information.");
+            System.out.println("Quitting in 2 seconds...");
+            util.delay(2000);
+            return;
+        }
+
+        User newUser = new User();
+
+        System.out.println("Sign up");
+        System.out.println("User name (for login): ");
+        String userName = sc.nextLine();
+        while (userName.equals("")) {
+            color.printRedText("User name cannot be empty! Try again");
+            util.delay(2000);
+            util.cls();
+            System.out.println("Sign up");
+            System.out.println("User name (for login): ");
+            userName = sc.nextLine();
+        }
+        newUser.setUserName(userName);
+
+        util.cls();
+        System.out.printf("Sign up as ");
+        color.printYellowText(userName);
+        System.out.println("Display name: ");
+        String displayName = sc.nextLine();
+        while (displayName.equals("")) {
+            color.printRedText("Display name cannot be empty! Try again");
+            util.delay(2000);
+            util.cls();
+            System.out.printf("Sign up as ");
+            color.printYellowText(userName);
+            System.out.println("Display name: ");
+            displayName = sc.nextLine();
+        }
+        newUser.setChrName(displayName);
+
+        util.cls();
+        System.out.printf("Sign up as ");
+        color.printGreenText(displayName);
+        System.out.println("Password: ");
+        String password = sc.nextLine();
+        while (!validate.isValidPassword(password)) {
+            util.delay(2000);
+            util.cls();
+            System.out.printf("Sign up as ");
+            color.printYellowText(userName);
+            System.out.println("Display name: ");
+            password = sc.nextLine();
+        }
+        newUser.setPassword(password);
+
+        util.cls();
+        System.out.printf("Sign up as ");
+        color.printGreenText(displayName);
+        System.out.println("Confirm your password: ");
+        while (!password.equals(sc.nextLine())) {
+            color.printRedText("Password does not match! Try again");
+            util.delay(2000);
+            util.cls();
+            System.out.printf("Sign up as ");
+            color.printGreenText(displayName);
+            System.out.println("Confirm your password: ");
+        }
+
+        util.cls();
+        System.out.printf("Sign up as ");
+        color.printGreenText(displayName);
+        System.out.println("Role: ");
+        String role = sc.nextLine();
+        while (role.equals("")) {
+            color.printRedText("Role name cannot be empty! Try again");
+            util.delay(2000);
+            util.cls();
+            System.out.printf("Sign up as ");
+            color.printGreenText(displayName);
+            System.out.println("Role: ");
+            role = sc.nextLine();
+        }
+        newUser.setChrName(displayName);
+
+        util.cls();
+        System.out.printf("Sign up as ");
+        color.printGreenText(displayName + "(" + role + ")");
+        System.out.println("Press ENTER to confirm adding user or type anything to go back...");
+        if (!sc.nextLine().equals("")) {
+            return;
+        }
+
+        util.cls();
+        try {
+            if(userDAO.insert(newUser)){
+                color.printGreenText("User " + userName + " added successfully!");
+            }else{
+                color.printRedText("User " + userName + " already exists!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            color.printRedText("User already exists!");
+            util.delay(2000);
+            return;
+        }
+        util.delay(2000);
+        return;
+    }
+
     public User login() {
         int tries = 3;
-        
+
         while (tries > 0) {
             util.cls();
             System.out.println("Login\n");
@@ -68,10 +178,10 @@ public class UserService {
                 user = userDAO.getById(username);
             } catch (Exception e) {
                 e.printStackTrace();
-                
+
             }
             if (user == null) {
-                
+
                 System.out.println("User does not exist!");
                 // tries--;
                 util.delay(2000);
@@ -84,7 +194,7 @@ public class UserService {
             util.cls();
             if (user.getPassword().equals(password)) {
                 color.printGreenText("Login successful!");
-                // 
+                //
                 util.delay(2000);
                 return user;
             } else {
@@ -102,7 +212,7 @@ public class UserService {
 
     public boolean changePassword() {
         util.cls();
-        if(user==null){
+        if (user == null) {
             color.printYellowText("Please login first!\nReturn in 2 seconds...");
             util.delay(2000);
             return false;
@@ -118,12 +228,12 @@ public class UserService {
                 System.out.println("Please input your old password for confirmation: ");
             } else {
                 color.printRedText("You have no more chances left.");
-                
+
                 return false;
             }
-            
+
         }
-        
+
         util.cls();
         System.out.println("Please input your new password: ");
         String newPassword = sc.nextLine();
@@ -140,23 +250,23 @@ public class UserService {
             try {
                 userDAO.update(user);
                 color.printGreenText("Password changed successfully!");
-                
+
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("Error occured when changing password!\nReturn in 2 seconds...");
                 util.delay(2000);
-                
+
                 return false;
             }
-            
+
         } else {
             color.printRedText("Dosen't match with your priviously input!");
             System.out.println("Password change cancelled! Return in 2 seconds...");
             util.delay(2000);
-            
+
             return false;
         }
     }
-    
+
 }
