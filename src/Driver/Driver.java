@@ -83,8 +83,11 @@ public class Driver {
             case 6:
                 us.signup();
                 break;
-
             case 7:
+                cashier.deleteTransactionRecord();
+                break;
+
+            case 8:
                 util.cls();
                 System.out.println("\nQuitting...");
                 util.delay(1000);
@@ -105,7 +108,8 @@ public class Driver {
         System.out.println("4. Change Password");
         System.out.println("5. Export Data");
         System.out.println("6. Create Account");
-        System.out.println("7. Exit");
+        System.out.println("7. Delete Transaction Record");
+        System.out.println("8. Exit");
         System.out.println("\nCashier: " + user.getChrName());
         System.out.println("\nPlease select an option: ");
     }

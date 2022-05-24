@@ -40,7 +40,7 @@ public class Cashier {
     private src.DataType.User user;
     private UIUX util = new UIUX();
     private DataValidation validate = new DataValidation();
-    private ConsoleColor color=new ConsoleColor();
+    private ConsoleColor color = new ConsoleColor();
     private Scanner sc = null;
 
     // 从工厂类获取 dao 实现类对象
@@ -62,7 +62,7 @@ public class Cashier {
         for (int i = 0; i == 0;) {
             System.out.println("Please input the barcode: ");
             barcode = sc.nextLine();
-            
+
             while (!validate.isValidBarcode(barcode)) {
                 color.printRedText("Invalid barcode!");
                 color.printYellowText("A valid barcode contains exactly 6 digits!");
@@ -82,15 +82,14 @@ public class Cashier {
                 util.delay(2000);
             }
         }
-
         record.setTransaction_id(Integer.toString(Integer.parseInt(cashierDAO.getLastTransactionID()) + 1));
         record.setBarcode(barcode);
         record.setProductName(product.getProductName());
         record.setPrice_x100(product.getPrice_x100());
         System.out.println("Please input the quantity: ");
-        String qt=sc.nextLine();
-        while(qt.equals("")){
-            qt=sc.nextLine();
+        String qt = sc.nextLine();
+        while (qt.equals("")) {
+            qt = sc.nextLine();
         }
         record.setQuantity(Integer.parseInt(qt));
         record.setOperator(user.getUserName());
@@ -102,7 +101,39 @@ public class Cashier {
 
         } catch (Exception e) {
             color.printRedText("Error in adding transaction!");
+
+        }
+        util.delay(2000);
+        return;
+    }
+
+    public void deleteTransactionRecord() {
+        util.cls();
+
+        if (!user.getRole().equals("admin")) {
+            System.out.println(
+                    "You are not authorized to access this page! Contact your administrator for more information.");
+            System.out.println("Quitting in 2 seconds...");
+            util.delay(2000);
+            return;
+        }
+
+        String transaction_id = null;
+        System.out.println("Please input the transaction ID: ");
+        transaction_id = sc.nextLine();
+        Record record = null;
+        try {
+            record = cashierDAO.getById(transaction_id);
+            if (record == null) {
+                color.printRedText("Transaction not found!");
+            } else {
+                cashierDAO.delete(transaction_id);
+                color.printGreenText("Transaction deleted successfully!");
+            }
             
+        } catch (Exception e) {
+            color.printRedText("Error in deleting transaction!");
+            e.printStackTrace();
         }
         util.delay(2000);
         return;
@@ -112,7 +143,7 @@ public class Cashier {
         util.cls();
         System.out.println("Please input the date: ");
         String date = sc.nextLine();
-        if(date.equals("exit")){
+        if (date.equals("exit")) {
             return false;
         }
         util.cls();
@@ -125,7 +156,7 @@ public class Cashier {
             util.cls();
             System.out.println("Please input the date: ");
             date = sc.nextLine();
-            if(date.equals("exit")){
+            if (date.equals("exit")) {
                 return false;
             }
             arrOfDate = validate.isValidDate(date);
@@ -142,10 +173,10 @@ public class Cashier {
 
         ListIterator<src.DataType.Record> it = records.listIterator();
         listDateQuery(arrOfDate, it);
-        if(sc.nextLine().equals("")){
+        if (sc.nextLine().equals("")) {
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
 
     public void export2sheet() {
@@ -196,7 +227,6 @@ public class Cashier {
             workbook.write();
             workbook.close();
             color.printGreenText("Successfully exported to sheet!");
-            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -204,7 +234,6 @@ public class Cashier {
         }
         util.delay(2000);
         return;
-        
 
     }
 
@@ -218,10 +247,10 @@ public class Cashier {
             System.out.println("Error in querying transactions!");
         }
 
-        File file=new File("salesrecords.txt");
+        File file = new File("salesrecords.txt");
         try (FileOutputStream fos = new FileOutputStream(file);
-        OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
-        BufferedWriter writer = new BufferedWriter(osw)) {
+                OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+                BufferedWriter writer = new BufferedWriter(osw)) {
             int listLen = records.size();
             for (int i = 0; i < listLen; i++) {
                 writer.append(records.get(i).getTransaction_id());
@@ -245,35 +274,35 @@ public class Cashier {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-        
+
         util.delay(2000);
     }
 
-    public void export2xml(){
+    public void export2xml() {
         util.cls();
         List<src.DataType.Record> records = null;
-        try{
-        records = cashierDAO.query(
-                "select transaction_id,barcode,productName,price_x100,quantity,operator,time from salesrecords");
-        OutputFormat format = OutputFormat.createPrettyPrint();
-        XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(new File("salesrecords.xml")), format);
-        Document document = DocumentHelper.createDocument();
-        Element rootElement = document.addElement("class"); // 根节点
-        int successCount=0;
-        for(Record record:records){
-            Element record_xml = rootElement.addElement("record"); // 子节点
-            record_xml.addElement("transaction_id").addText(record.getTransaction_id());
-            record_xml.addElement("barcode").addText(record.getBarcode());
-            record_xml.addElement("product_name").addText(record.getProductName());
-            record_xml.addElement("price_x100").addText(Integer.toString(record.getPrice_x100()));
-            record_xml.addElement("quantity").addText(Integer.toString(record.getQuantity()));
-            record_xml.addElement("operator").addText(record.getOperator());
-            record_xml.addElement("time").addText(record.getTime());
-            successCount++;
-        }
-        xmlWriter.write(document);
-        color.printGreenText(successCount + " transaction records exported successfully!");
-        }catch(Exception e){
+        try {
+            records = cashierDAO.query(
+                    "select transaction_id,barcode,productName,price_x100,quantity,operator,time from salesrecords");
+            OutputFormat format = OutputFormat.createPrettyPrint();
+            XMLWriter xmlWriter = new XMLWriter(new FileOutputStream(new File("salesrecords.xml")), format);
+            Document document = DocumentHelper.createDocument();
+            Element rootElement = document.addElement("class"); // 根节点
+            int successCount = 0;
+            for (Record record : records) {
+                Element record_xml = rootElement.addElement("record"); // 子节点
+                record_xml.addElement("transaction_id").addText(record.getTransaction_id());
+                record_xml.addElement("barcode").addText(record.getBarcode());
+                record_xml.addElement("product_name").addText(record.getProductName());
+                record_xml.addElement("price_x100").addText(Integer.toString(record.getPrice_x100()));
+                record_xml.addElement("quantity").addText(Integer.toString(record.getQuantity()));
+                record_xml.addElement("operator").addText(record.getOperator());
+                record_xml.addElement("time").addText(record.getTime());
+                successCount++;
+            }
+            xmlWriter.write(document);
+            color.printGreenText(successCount + " transaction records exported successfully!");
+        } catch (Exception e) {
             e.printStackTrace();
             color.printRedText("Error when exporting to xml!");
         }
@@ -339,7 +368,7 @@ public class Cashier {
         System.out.println("Total quantity: " + total_quantity + "\tTotal products: " + products.size()
                 + "\tTotal amount: " + util.price2string(amount_x100));
         System.out.println("\nPress ENTER to continue searching or type anything to go back...");
-        
+
     }
 
     // Returns xx.xx in string format

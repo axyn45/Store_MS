@@ -40,7 +40,7 @@ public class CashierDAOImpl implements ICashierDAO{
 
 
     public boolean delete(String transaction_id) throws Exception {
-        String sql = "DELETE FROM user WHERE userName=?";
+        String sql = "DELETE FROM salesrecords WHERE transaction_id=?";
         this.pstmt = this.conn.prepareStatement(sql);
         this.pstmt.setString(1, transaction_id);
         if (this.pstmt.executeUpdate() > 0) {
@@ -52,7 +52,8 @@ public class CashierDAOImpl implements ICashierDAO{
 
 
     public Record getById(String transaction_id) {
-        String sql = "SELECT userName,chrName,password,role FROM user WHERE userName=?";
+        String sql = 
+        "SELECT * FROM salesrecords WHERE transaction_id=?";
         try {
             this.pstmt = this.conn.prepareStatement(sql);
             this.pstmt.setString(1, transaction_id);

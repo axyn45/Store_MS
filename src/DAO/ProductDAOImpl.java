@@ -40,6 +40,7 @@ public class ProductDAOImpl implements IProductDAO {
         this.pstmt.setString(2, product.getProductName());
         this.pstmt.setInt(3, product.getPrice_x100());
         this.pstmt.setString(4, product.getSupplier());
+        this.pstmt.setString(5, product.getBarcode());
         if (this.pstmt.executeUpdate() > 0) {
             return true;
         } else {
