@@ -51,9 +51,8 @@ public class ProductMaintainance {
         this.dbc.close();
     }
 
-    public void updateProduct(){
+    public void menu() {
         util.cls();
-
         if (!user.getRole().equals("admin")) {
             System.out.println(
                     "You are not authorized to access this page! Contact your administrator for more information.");
@@ -61,88 +60,57 @@ public class ProductMaintainance {
             util.delay(2000);
             return;
         }
+        MaintainanceUI();
+        int choice = Integer.parseInt(sc.nextLine());
 
-        System.out.println("Please enter the product barcode you want to update: ");
-        String barcode = sc.nextLine();
-        Product product=null;
-        
-        try{
-            product = productDAO.getByBarcode(barcode);
-            if(product==null){
-                color.printRedText("Product not found!");
-            }else{
-                String display_barcode="";
-                String display_name="";
-                String display_price="";
-                String display_supplier="";
-                display_barcode="Product Barcode: "+product.getBarcode();
-                display_name="Product Name: "+product.getProductName();
-                display_price="Product Price: "+util.price2string(product.getPrice_x100());
-                display_supplier="Supplier: "+product.getSupplier();
-                boolean isNameChanged=false;
-                boolean isPriceChanged=false;
-                boolean isSupplierChanged=false;
+        while (true) {
+            switch (choice) {
+            case 1:
+                importFromExcel();
+                break;
 
+            case 2:
+                importFromText();
+                break;
+
+            case 3:
+                importFromXML();
+                break;
+
+            case 4:
+                while (manualAdd());
+                break;
+
+            case 5:
+                export2sheet();
+                break;
+            case 6:
+                export2text();
+                break;
+            case 7:
+                export2xml();
+                break;
+            case 8:
+                updateProduct();
+                break;
+            case 9:
+                while (searchProduct());
+                break;
+            case 0:
                 util.cls();
-                System.out.println(display_barcode);
-                System.out.println(display_name);
-                System.out.println(display_price);
-                System.out.println(display_supplier);
-                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
-                System.out.println("Product Name: ");
-                String name = sc.nextLine();
-                if(!name.equals("")){
-                    product.setProductName(name);
-                    display_name=display_name+" -> "+name;
-                    isNameChanged=true;
-                }
+                return;
 
-                util.cls();
-                System.out.println(display_barcode);
-                if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
-                System.out.println(display_price);
-                System.out.println(display_supplier);
-                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
-                System.out.println("Price: ");
-                String price = sc.nextLine();
-                if(!price.equals("")){
-                    product.setPrice_x100(validate.isValidPrice(price));
-                    display_price=display_price+" -> "+util.price2string(product.getPrice_x100());
-                    isPriceChanged=true;
-                }
-
-                util.cls();
-                System.out.println(display_barcode);
-                if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
-                if(!isPriceChanged) System.out.println(display_price);else color.printYellowText(display_price);
-                System.out.println(display_supplier);
-                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
-                System.out.println("Supplier: ");
-                String supplier = sc.nextLine();
-                if(!supplier.equals("")){
-                    product.setSupplier(supplier);
-                    display_supplier=display_supplier+" -> "+supplier;
-                    isSupplierChanged=true;
-                }
-                util.cls();
-                if(productDAO.update(product)){
-                    System.out.println(display_barcode);
-                    if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
-                    if(!isPriceChanged) System.out.println(display_price);else color.printYellowText(display_price);
-                    if(!isSupplierChanged) System.out.println(display_supplier);else color.printYellowText(display_supplier);
-                    color.printGreenText("Product updated successfully!");
-                }else{
-                    color.printRedText("Product update failed!");
-                }
-
+            default:
+                System.out.println("Invalid choice!");
+                break;
             }
-        }catch(Exception e){
-            color.printRedText("Product not found!");
-            e.printStackTrace();
+            MaintainanceUI();
+            sc = new Scanner(System.in);
+            choice = sc.nextInt();
         }
-        util.delay(2000);
-        return;
     }
+
+    
 
     public void importFromExcel() {
         List<Product> products = new ArrayList<Product>();
@@ -248,67 +216,57 @@ public class ProductMaintainance {
         util.delay(2000);
     }
 
-    public void menu() {
+    public boolean manualAdd() {
+        Product product = new Product();
+
+        String barcode = manualAdd_getBarcode();
+        if (barcode == null) {
+            return false;
+        }
+        product.setBarcode(barcode);
+
+        String name = manualAdd_getName();
+        if (name == null) {
+            return false;
+        }
+        product.setProductName(name);
+
+        int price_x100 = manualAdd_getPrice_x100();
+        if (price_x100 == -1) {
+            return false;
+        }
+        product.setPrice_x100(price_x100);
+
+        String supplier = manualAdd_getSupplier();
+        if (supplier.equals("exit")) {
+            return false;
+        }
+        product.setSupplier(supplier);
+
         util.cls();
-        if (!user.getRole().equals("admin")) {
-            System.out.println(
-                    "You are not authorized to access this page! Contact your administrator for more information.");
-            System.out.println("Quitting in 2 seconds...");
-            util.delay(2000);
-            return;
+        try {
+            productDAO.insert(product);
+            color.printCyanText("Barcode: " + product.getBarcode());
+            color.printCyanText("Name: " + product.getProductName());
+            color.printCyanText("Price: " + util.price2string(product.getPrice_x100()));
+            color.printCyanText("Supplier: " + product.getSupplier());
+            color.printGreenText("Successfully added!");
+            product.toString();
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        MaintainanceUI();
-        int choice = Integer.parseInt(sc.nextLine());
+        System.out.println("\nPress ENTER to add another product or type anything to go back...");
+        if (!sc.nextLine().equals("")) {
+            util.cls();
 
-        while (true) {
-            switch (choice) {
-            case 1:
-                importFromExcel();
-                break;
-
-            case 2:
-                importFromText();
-                break;
-
-            case 3:
-                importFromXML();
-                break;
-
-            case 4:
-                while (manualAdd());
-                break;
-
-            case 5:
-                export2sheet();
-                break;
-            case 6:
-                export2text();
-                break;
-            case 7:
-                export2xml();
-                break;
-            case 8:
-                updateProduct();
-                break;
-            case 9:
-                while (searchProduct());
-                break;
-            case 0:
-                util.cls();
-                return;
-
-            default:
-                System.out.println("Invalid choice!");
-                break;
-            }
-            MaintainanceUI();
-            sc = new Scanner(System.in);
-            choice = sc.nextInt();
+            return false;
         }
+        util.cls();
+
+        return true;
+
+        // Trur for continue, False for go back
     }
-    // public void deleteWizard(){
-
-    // }
 
     public void export2sheet(){
         util.cls();
@@ -424,46 +382,131 @@ public class ProductMaintainance {
         util.delay(2000);
     }
 
-    public boolean manualAdd() {
-        Product product = new Product();
+    
 
-        String barcode = manualAdd_getBarcode();
-        if (barcode == null) {
-            return false;
-        }
-        product.setBarcode(barcode);
+    
 
-        String name = manualAdd_getName();
-        if (name == null) {
-            return false;
-        }
-        product.setProductName(name);
-
-        int price_x100 = manualAdd_getPrice_x100();
-        if (price_x100 == -1) {
-            return false;
-        }
-        product.setPrice_x100(price_x100);
-
-        String supplier = manualAdd_getSupplier();
-        if (supplier.equals("exit")) {
-            return false;
-        }
-        product.setSupplier(supplier);
-
+    public void updateProduct(){
         util.cls();
-        try {
-            productDAO.insert(product);
-            color.printCyanText("Barcode: " + product.getBarcode());
-            color.printCyanText("Name: " + product.getProductName());
-            color.printCyanText("Price: " + util.price2string(product.getPrice_x100()));
-            color.printCyanText("Supplier: " + product.getSupplier());
-            color.printGreenText("Successfully added!");
-            product.toString();
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+
+        if (!user.getRole().equals("admin")) {
+            System.out.println(
+                    "You are not authorized to access this page! Contact your administrator for more information.");
+            System.out.println("Quitting in 2 seconds...");
+            util.delay(2000);
+            return;
         }
-        System.out.println("\nPress ENTER to add another product or type anything to go back...");
+
+        System.out.println("Please enter the product barcode you want to update: ");
+        String barcode = sc.nextLine();
+        Product product=null;
+        
+        try{
+            product = productDAO.getByBarcode(barcode);
+            if(product==null){
+                color.printRedText("Product not found!");
+            }else{
+                String display_barcode="";
+                String display_name="";
+                String display_price="";
+                String display_supplier="";
+                display_barcode="Product Barcode: "+product.getBarcode();
+                display_name="Product Name: "+product.getProductName();
+                display_price="Product Price: "+util.price2string(product.getPrice_x100());
+                display_supplier="Supplier: "+product.getSupplier();
+                boolean isNameChanged=false;
+                boolean isPriceChanged=false;
+                boolean isSupplierChanged=false;
+
+                util.cls();
+                System.out.println(display_barcode);
+                System.out.println(display_name);
+                System.out.println(display_price);
+                System.out.println(display_supplier);
+                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
+                System.out.println("Product Name: ");
+                String name = sc.nextLine();
+                if(!name.equals("")){
+                    product.setProductName(name);
+                    display_name=display_name+" -> "+name;
+                    isNameChanged=true;
+                }
+
+                util.cls();
+                System.out.println(display_barcode);
+                if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
+                System.out.println(display_price);
+                System.out.println(display_supplier);
+                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
+                System.out.println("Price: ");
+                String price = sc.nextLine();
+                if(!price.equals("")){
+                    product.setPrice_x100(validate.isValidPrice(price));
+                    display_price=display_price+" -> "+util.price2string(product.getPrice_x100());
+                    isPriceChanged=true;
+                }
+
+                util.cls();
+                System.out.println(display_barcode);
+                if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
+                if(!isPriceChanged) System.out.println(display_price);else color.printYellowText(display_price);
+                System.out.println(display_supplier);
+                color.printCyanText("Tip: Type nothing to leave the field unchanged.");
+                System.out.println("Supplier: ");
+                String supplier = sc.nextLine();
+                if(!supplier.equals("")){
+                    product.setSupplier(supplier);
+                    display_supplier=display_supplier+" -> "+supplier;
+                    isSupplierChanged=true;
+                }
+                util.cls();
+                if(productDAO.update(product)){
+                    System.out.println(display_barcode);
+                    if(!isNameChanged) System.out.println(display_name);else color.printYellowText(display_name);
+                    if(!isPriceChanged) System.out.println(display_price);else color.printYellowText(display_price);
+                    if(!isSupplierChanged) System.out.println(display_supplier);else color.printYellowText(display_supplier);
+                    color.printGreenText("Product updated successfully!");
+                }else{
+                    color.printRedText("Product update failed!");
+                }
+
+            }
+        }catch(Exception e){
+            color.printRedText("Product not found!");
+            e.printStackTrace();
+        }
+        util.delay(2000);
+        return;
+    }
+
+    public boolean searchProduct() {
+        System.out.println("Tips: Try type relevant information to search products.");
+        System.out.println("      Type \"exit\" to quit searching.");
+        System.out.println("Search: ");
+        String key = sc.nextLine();
+
+        String search_query;
+
+        List<Product> products;
+        if (key.equals("exit")) {
+
+            return false;
+        }
+        util.cls();
+        search_query = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode LIKE '%" + key
+                + "%' OR productName LIKE '%" + key + "%' OR price_x100 LIKE '%" + key + "%' OR supplier LIKE '%" + key
+                + "%'";
+
+        products = null;
+        try {
+            products = productDAO.query(search_query);
+            listProducts(products, key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("No such product.");
+        }
+
+        System.out.println("\nPress ENTER to search again or type anything to go back.");
         if (!sc.nextLine().equals("")) {
             util.cls();
 
@@ -472,8 +515,46 @@ public class ProductMaintainance {
         util.cls();
 
         return true;
+        // True for continue, False for go back
+    }
 
-        // Trur for continue, False for go back
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void MaintainanceUI() {
+        // menu
+        util.cls();
+        System.out.println("====Product Maintainance====");
+        System.out.println("1. Import from Excel sheet");
+        System.out.println("2. Import from text");
+        System.out.println("3. Import from XML");
+        System.out.println("4. Manually Add Product");
+        System.out.println("5. Export to Excel sheet");
+        System.out.println("6. Export to text");
+        System.out.println("7. Export to XML");
+        System.out.println("8. Update Product Information");
+        System.out.println("9. Search Product");
+        System.out.println("0. Back");
+        System.out.println("\nPlease input your choice: ");
+
+    }
+
+    public void listProducts(List<Product> products, String key) {
+        util.cls();
+        if (products.size() != 0) {
+            System.out.println("Found " + products.size() + " products about \"" + key + "\".");
+            System.out.println("====Product List====");
+
+            System.out.println("No.\tBarcode\t\tName\t\tPrice\tSupplier");
+        } else {
+            System.out.println("No such product.");
+        }
+
+        for (int i = 1; i <= products.size(); i++) {
+            System.out.println(Integer.toString(i) + "\t" + products.get(i - 1).getBarcode() + "\t\t"
+                    + products.get(i - 1).getProductName() + "\t\t"
+                    + util.price2string(products.get(i - 1).getPrice_x100()) + "\t"
+                    + products.get(i - 1).getSupplier());
+        }
     }
 
     public void manualAdd_showWizard() {
@@ -562,81 +643,5 @@ public class ProductMaintainance {
         System.out.println("Product Supplier: ");
 
         return sc.nextLine();
-    }
-
-    public boolean searchProduct() {
-        System.out.println("Tips: Try type relevant information to search products.");
-        System.out.println("      Type \"exit\" to quit searching.");
-        System.out.println("Search: ");
-        String key = sc.nextLine();
-
-        String search_query;
-
-        List<Product> products;
-        if (key.equals("exit")) {
-
-            return false;
-        }
-        util.cls();
-        search_query = "SELECT barcode,productName,price_x100,supplier FROM product WHERE barcode LIKE '%" + key
-                + "%' OR productName LIKE '%" + key + "%' OR price_x100 LIKE '%" + key + "%' OR supplier LIKE '%" + key
-                + "%'";
-
-        products = null;
-        try {
-            products = productDAO.query(search_query);
-            listProducts(products, key);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("No such product.");
-        }
-
-        System.out.println("\nPress ENTER to search again or type anything to go back.");
-        if (!sc.nextLine().equals("")) {
-            util.cls();
-
-            return false;
-        }
-        util.cls();
-
-        return true;
-        // True for continue, False for go back
-    }
-
-    public void MaintainanceUI() {
-        // menu
-        util.cls();
-        System.out.println("====Product Maintainance====");
-        System.out.println("1. Import from Excel sheet");
-        System.out.println("2. Import from text");
-        System.out.println("3. Import from XML");
-        System.out.println("4. Manually Add Product");
-        System.out.println("5. Export to Excel sheet");
-        System.out.println("6. Export to text");
-        System.out.println("7. Export to XML");
-        System.out.println("8. Update Product Information");
-        System.out.println("9. Search Product");
-        System.out.println("0. Back");
-        System.out.println("\nPlease input your choice: ");
-
-    }
-
-    public void listProducts(List<Product> products, String key) {
-        util.cls();
-        if (products.size() != 0) {
-            System.out.println("Found " + products.size() + " products about \"" + key + "\".");
-            System.out.println("====Product List====");
-
-            System.out.println("No.\tBarcode\t\tName\t\tPrice\tSupplier");
-        } else {
-            System.out.println("No such product.");
-        }
-
-        for (int i = 1; i <= products.size(); i++) {
-            System.out.println(Integer.toString(i) + "\t" + products.get(i - 1).getBarcode() + "\t\t"
-                    + products.get(i - 1).getProductName() + "\t\t"
-                    + util.price2string(products.get(i - 1).getPrice_x100()) + "\t"
-                    + products.get(i - 1).getSupplier());
-        }
     }
 }
