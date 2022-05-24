@@ -1,5 +1,5 @@
 # Java超市管理系统
 
-V1.0
+V1.1
 
-Release Date: May 22, 2022
+Release Date: May 24, 2022
